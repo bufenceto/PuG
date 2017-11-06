@@ -9,7 +9,7 @@
 #define MAX_PATH_SIZE 260
 
 using namespace std::experimental::filesystem;
-using namespace vpl::log;
+using namespace pug::log;
 
 static path g_logFile;
 static std::fstream logFileStream;
@@ -37,19 +37,19 @@ void GetBreakLevelString(EBreakLevel breakLevel, std::string& out_string)
 	}
 }
 
-void vpl::log::SetTextColor(uint16_t color)
+void pug::log::SetTextColor(uint16_t color)
 {
 	HANDLE hstdout = GetStdHandle(STD_OUTPUT_HANDLE);
 	SetConsoleTextAttribute(hstdout, color);
 }
 
-void vpl::log::ResetTextColor()
+void pug::log::ResetTextColor()
 {
 	HANDLE hstdout = GetStdHandle(STD_OUTPUT_HANDLE);
 	SetConsoleTextAttribute(hstdout, g_csbi.wAttributes);
 }
 
-void vpl::log::WriteToLog(const std::string& text)
+void pug::log::WriteToLog(const std::string& text)
 {
 	if (!logFileStream.write(text.c_str(), text.length()))
 	{
@@ -58,12 +58,12 @@ void vpl::log::WriteToLog(const std::string& text)
 	logFileStream.flush();
 }
 
-void vpl::log::WriteToConsole(const std::string& text)
+void pug::log::WriteToConsole(const std::string& text)
 {
 	printf("%s", text.c_str());
 }
 
-uint32_t vpl::log::StartLog(const std::string& logFilePath, const vpl::log::EBreakLevel breakLevel /* = EBreakLevel::BreakLevel_Error */)
+uint32_t pug::log::StartLog(const std::string& logFilePath, const pug::log::EBreakLevel breakLevel /* = EBreakLevel::BreakLevel_Error */)
 {
 	g_logFile = path(logFilePath) / "log.txt";
 	logFileStream.open(g_logFile.c_str(), std::fstream::in | std::fstream::out | std::fstream::trunc);
@@ -83,7 +83,7 @@ uint32_t vpl::log::StartLog(const std::string& logFilePath, const vpl::log::EBre
 	return 0;
 }
 
-uint32_t vpl::log::EndLog()
+uint32_t pug::log::EndLog()
 {
 	std::string timeAndDate;
 	GetDateAndTimeString(timeAndDate);
@@ -99,7 +99,7 @@ uint32_t vpl::log::EndLog()
 	return 0;
 }
 
-void vpl::log::Log(const char* log)
+void pug::log::Log(const char* log)
 {
 	std::stringstream buffer;
 	while (log && *log)
@@ -109,7 +109,7 @@ void vpl::log::Log(const char* log)
 	buffer << std::endl;
 	WriteToLog(buffer.str());
 }
-void vpl::log::Info(const char* info)
+void pug::log::Info(const char* info)
 {
 	std::stringstream buffer;
 	SetTextColor(LOG_COLOR_WHITE);
@@ -126,7 +126,7 @@ void vpl::log::Info(const char* info)
 		__debugbreak();
 	}
 }
-void vpl::log::Message(const char* message)
+void pug::log::Message(const char* message)
 {
 	std::stringstream buffer;
 	SetTextColor(LOG_COLOR_GREEN);
@@ -143,7 +143,7 @@ void vpl::log::Message(const char* message)
 		__debugbreak();
 	}
 }
-void vpl::log::Warning(const char* warning)
+void pug::log::Warning(const char* warning)
 {
 	std::stringstream buffer;
 	SetTextColor(LOG_COLOR_YELLOW);
@@ -160,7 +160,7 @@ void vpl::log::Warning(const char* warning)
 		__debugbreak();
 	}
 }
-void vpl::log::Error(const char* error)
+void pug::log::Error(const char* error)
 {
 	std::stringstream buffer;
 	SetTextColor(LOG_COLOR_RED);
@@ -177,9 +177,10 @@ void vpl::log::Error(const char* error)
 		__debugbreak();
 	}
 }
+	 
 //special case for our assert macro, 
 //we dont want to trigger a break point twice
-void vpl::log::LogAssert(const char* error)
+void pug::log::LogAssert(const char* error)
 {//just an error msg without breaking
 	std::stringstream buffer;
 	SetTextColor(LOG_COLOR_RED);
@@ -193,7 +194,7 @@ void vpl::log::LogAssert(const char* error)
 	ResetTextColor();
 }
 
-std::string vpl::log::GetLogFilePath()
+std::string pug::log::GetLogFilePath()
 {
 	return g_logFile.string();
 }

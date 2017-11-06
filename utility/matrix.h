@@ -11,7 +11,7 @@
 #undef far
 #endif
 
-namespace vpl {
+namespace pug {
 namespace utility {
 
 	inline vmath::Matrix4 CreateLookAtMatrix(
@@ -148,5 +148,5 @@ namespace utility {
 		return b * Inverse(a);
 	}
 						
-}//vpl::utility
-}//vpl
+}//pug::utility
+}//pug

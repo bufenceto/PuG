@@ -3,7 +3,7 @@
 #include <sstream>
 #include <iostream>
 
-namespace vpl{
+namespace pug{
 namespace log{
 
 #define LOG_COLOR_GREEN 0x0A
@@ -19,7 +19,7 @@ namespace log{
 		BreakLevel_Error = 8,
 	};
 
-	uint32_t StartLog(const std::string& logFilePath, const vpl::log::EBreakLevel breakLevel = EBreakLevel::BreakLevel_Error);
+	uint32_t StartLog(const std::string& logFilePath, const pug::log::EBreakLevel breakLevel = EBreakLevel::BreakLevel_Error);
 	uint32_t EndLog();
 
 	void SetTextColor(uint16_t color);
@@ -33,6 +33,7 @@ namespace log{
 	void Message(const char* message);
 	void Warning(const char* warning);
 	void Error(const char* error);
+
 	void LogAssert(const char* error);
 
 	///http://www.stroustrup.com/C++11FAQ.html#variadic-templates
@@ -149,5 +150,5 @@ namespace log{
 	}
 
 	std::string GetLogFilePath();
-}//vpl::log
-}//vpl
+}//pug::log
+}//pug

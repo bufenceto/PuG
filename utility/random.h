@@ -2,7 +2,7 @@
 #include <cstdint>
 #include <random>
 
-namespace vpl {
+namespace pug {
 namespace utility {
 
 	struct RandomState
@@ -20,5 +20,5 @@ namespace utility {
 
 	void Seed(RandomState& randomState, uint32_t seed);
 
-}//vpl::utility
-}//vpl
+}//pug::utility
+}//pug

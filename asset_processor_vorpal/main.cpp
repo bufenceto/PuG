@@ -21,7 +21,8 @@
 using namespace std;
 using namespace std::experimental::filesystem;
 using namespace vpl;
-using namespace vpl::log;
+using namespace pug;
+using namespace pug::log;
 
 const char* helpMessage =
 "Please specify a valid absolute windows path to be parsed, all sub folders will be parsed aswell!\n"

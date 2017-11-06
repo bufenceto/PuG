@@ -11,7 +11,7 @@
 #include <experimental\filesystem>
 
 using namespace vpl;
-using namespace vpl::log;
+using namespace pug::log;
 using namespace Assimp;
 using namespace std::experimental::filesystem;
 

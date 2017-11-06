@@ -150,7 +150,7 @@ static void Read(std::istream &is, std::string &s, int max)
 	s.assign(sbuf, is.gcount());
 }
 
-void vpl::utility::SHA1(const std::string &string, char* out_result, const size_t& resultSize)
+void pug::utility::SHA1(const std::string &string, char* out_result, const size_t& resultSize)
 {
 	constexpr uint32_t digestInts = 5;  /* number of 32bit integers per SHA1 digest */
 	constexpr uint32_t blockInts = 16;  /* number of 32bit integers per SHA1 block */

@@ -12,6 +12,10 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "asset_tool", "asset_tool\asset_tool.vcxproj", "{C20269C2-49DD-437A-88C1-6AD0FD65685E}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "asset_processor_vorpal", "asset_processor_vorpal\asset_processor.vcxproj", "{3C12CD24-762F-40CA-8AD9-9302A77A1778}"
+	ProjectSection(ProjectDependencies) = postProject
+		{63D8AC76-F83C-46DA-9294-74DE393BE671} = {63D8AC76-F83C-46DA-9294-74DE393BE671}
+		{E156EFAC-7F08-4C44-AC6F-32FA83FD1418} = {E156EFAC-7F08-4C44-AC6F-32FA83FD1418}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "utility", "utility\utility.vcxproj", "{63D8AC76-F83C-46DA-9294-74DE393BE671}"
 EndProject
