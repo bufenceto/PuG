@@ -1,9 +1,10 @@
-
-#include <cstdio>
+#include "asset_processor.h"
 
 int main()
 {
-	printf("hello world\n");
+	pug::assets::InitAssetProcessor();
+	pug::assets::RunAssetProcessor();
+	pug::assets::DestroyAssetProcessor();
 
 	return 0;
 }

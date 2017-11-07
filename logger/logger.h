@@ -29,43 +29,69 @@ namespace log{
 	void WriteToLog(const std::string& text);
 
 	void Log(const char* log);
+	void Log(const char* log, std::stringstream& buffer);
+
 	void Info(const char* info);
+	void Info(const char* info, std::stringstream& buffer);
+
 	void Message(const char* message);
+	void Message(const char* message, std::stringstream& buffer);
+
 	void Warning(const char* warning);
+	void Warning(const char* warning, std::stringstream& buffer);
+
 	void Error(const char* error);
+	void Error(const char* error, std::stringstream& buffer);
 
 	void LogAssert(const char* error);
+	void LogAssert(const char* error, std::stringstream& buffer);
 
 	///http://www.stroustrup.com/C++11FAQ.html#variadic-templates
 	template<typename T, typename... Args>
 	void Log(const char* log, T value, Args... args)
 	{
 		std::stringstream buffer;
+		buffer.precision(8);
 		while (log && *log)
 		{
 			if (*log == '%' && *++log != '%')
 			{	// a format specifier (ignore which one it is)
 				buffer << value;//stream in the value
-				WriteToLog(buffer.str());
-				Log(++log, args...); 	// ``peel off'' first argument
+								//WriteToLog(buffer.str());
+				Log(++log, buffer, args...); 	// ``peel off'' first argument
 				break;
 			}
 			buffer << *log++;//stream in characters
 		}
 	}
 	template<typename T, typename... Args>
+	void Log(const char* log, std::stringstream& buffer, T value, Args... args)
+	{
+		while (log && *log)
+		{
+			if (*log == '%' && *++log != '%')
+			{	// a format specifier (ignore which one it is)
+				buffer << value;//stream in the value
+								//WriteToLog(buffer.str());
+				Log(++log, buffer, args...); 	// ``peel off'' first argument
+				break;
+			}
+			buffer << *log++;//stream in characters
+		}
+	}
+
+	template<typename T, typename... Args>
 	void Info(const char* info, T value, Args... args)
 	{
 		std::stringstream buffer;
+		buffer.precision(8);
 		SetTextColor(LOG_COLOR_WHITE);
 		while (info && *info)
 		{
 			if (*info == '%' && *++info != '%')
 			{	// a format specifier (ignore which one it is)
 				buffer << value;//stream in the value
-				WriteToLog(buffer.str());
-				WriteToConsole(buffer.str());
-				Info(++info, args...); 	// ``peel off'' first argument
+				Info(++info, buffer, args...); 	// ``peel off'' first argument
 				break;
 			}
 			buffer << *info++;//stream in characters
@@ -73,56 +99,95 @@ namespace log{
 		ResetTextColor();
 	}
 	template<typename T, typename... Args>
+	void Info(const char* info, std::stringstream& buffer, T value, Args... args)
+	{
+		SetTextColor(LOG_COLOR_WHITE);
+		while (info && *info)
+		{
+			if (*info == '%' && *++info != '%')
+			{	// a format specifier (ignore which one it is)
+				buffer << value;//stream in the value
+				Info(++info, buffer, args...); 	// ``peel off'' first argument
+				break;
+			}
+			buffer << *info++;//stream in characters
+		}
+		ResetTextColor();
+	}
+
+	template<typename T, typename... Args>
 	void Message(const char* message, T value, Args... args)
 	{
 		std::stringstream buffer;
-		SetTextColor(LOG_COLOR_GREEN);
+		buffer.precision(8);
 		while (message && *message)
 		{
 			if (*message == '%' && *++message != '%')
 			{	// a format specifier (ignore which one it is)
 				buffer << value;//stream in the value
-				WriteToLog(buffer.str());
-				WriteToConsole(buffer.str());
-				Message(++message, args...); 	// ``peel off'' first argument
+				Message(++message, buffer, args...); 	// ``peel off'' first argument
 				break;
 			}
 			buffer << *message++;//stream in characters
 		}
-		ResetTextColor();
 	}
+	template<typename T, typename... Args>
+	void Message(const char* message, std::stringstream& buffer, T value, Args... args)
+	{
+		while (message && *message)
+		{
+			if (*message == '%' && *++message != '%')
+			{	// a format specifier (ignore which one it is)
+				buffer << value;//stream in the value
+				Message(++message, buffer, args...); 	// ``peel off'' first argument
+				break;
+			}
+			buffer << *message++;//stream in characters
+		}
+	}
+
 	template<typename T, typename... Args>
 	void Warning(const char* warning, T value, Args... args)
 	{
 		std::stringstream buffer;
-		SetTextColor(LOG_COLOR_YELLOW);
+		buffer.precision(8);
 		while (warning && *warning)
 		{
 			if (*warning == '%' && *++warning != '%')
 			{	// a format specifier (ignore which one it is)
 				buffer << value;//stream in the value
-				WriteToLog(buffer.str());
-				WriteToConsole(buffer.str());
-				Warning(++warning, args...); 	// ``peel off'' first argument
+				Warning(++warning, buffer, args...); 	// ``peel off'' first argument
 				break;
 			}
 			buffer << *warning++;//stream in characters
 		}
-		ResetTextColor();
 	}
+	template<typename T, typename... Args>
+	void Warning(const char* warning, std::stringstream& buffer, T value, Args... args)
+	{
+		while (warning && *warning)
+		{
+			if (*warning == '%' && *++warning != '%')
+			{	// a format specifier (ignore which one it is)
+				buffer << value;//stream in the value
+				Warning(++warning, buffer, args...); 	// ``peel off'' first argument
+				break;
+			}
+			buffer << *warning++;//stream in characters
+		}
+	}
+
 	template<typename T, typename... Args>
 	void Error(const char* error, T value, Args... args)
 	{
 		std::stringstream buffer;
-		SetTextColor(LOG_COLOR_RED);
+		buffer.precision(8);
 		while (error && *error)
 		{
 			if (*error == '%' && *++error != '%')
 			{	// a format specifier (ignore which one it is)
 				buffer << value;//stream in the value
-				WriteToLog(buffer.str());
-				WriteToConsole(buffer.str());
-				Error(++error, args...); 	// ``peel off'' first argument
+				Error(++error, buffer, args...); 	// ``peel off'' first argument
 				break;
 			}
 			buffer << *error++;//stream in characters
@@ -130,23 +195,49 @@ namespace log{
 		ResetTextColor();
 	}
 	template<typename T, typename... Args>
-	void LogAssert(const char* error, T value, Args... args)
+	void Error(const char* error, std::stringstream& buffer, T value, Args... args)
 	{
-		std::stringstream buffer;
-		SetTextColor(g_colors[1]);
 		while (error && *error)
 		{
 			if (*error == '%' && *++error != '%')
 			{	// a format specifier (ignore which one it is)
 				buffer << value;//stream in the value
-				WriteToLog(buffer.str());
-				WriteToConsole(buffer.str());
+				Error(++error, buffer, args...); 	// ``peel off'' first argument
+				break;
+			}
+			buffer << *error++;//stream in characters
+		}
+	}
+
+	template<typename T, typename... Args>
+	void LogAssert(const char* error, T value, Args... args)
+	{
+		std::stringstream buffer;
+		buffer.precision(8);
+		while (error && *error)
+		{
+			if (*error == '%' && *++error != '%')
+			{	// a format specifier (ignore which one it is)
+				buffer << value;//stream in the value
+				Error(++error, buffer, args...); 	// ``peel off'' first argument
+				break;
+			}
+			buffer << *error++;//stream in characters
+		}
+	}
+	template<typename T, typename... Args>
+	void LogAssert(const char* error, std::stringstream& buffer, T value, Args... args)
+	{
+		while (error && *error)
+		{
+			if (*error == '%' && *++error != '%')
+			{	// a format specifier (ignore which one it is)
+				buffer << value;//stream in the value
 				Error(++error, args...); 	// ``peel off'' first argument
 				break;
 			}
 			buffer << *error++;//stream in characters
 		}
-		ResetTextColor();
 	}
 
 	std::string GetLogFilePath();

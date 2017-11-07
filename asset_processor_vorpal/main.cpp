@@ -21,6 +21,7 @@
 using namespace std;
 using namespace std::experimental::filesystem;
 using namespace vpl;
+
 using namespace pug;
 using namespace pug::log;
 
