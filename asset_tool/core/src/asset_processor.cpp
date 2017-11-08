@@ -24,7 +24,7 @@ void pug::assets::InitAssetProcessor()
 
 void pug::assets::RunAssetProcessor()
 {
-	while (1)
+	//while (1)
 	{
 		g_window->Update();
 	}
@@ -32,6 +32,7 @@ void pug::assets::RunAssetProcessor()
 
 void pug::assets::DestroyAssetProcessor()
 {
+	PUG_TRY(graphics::DestroyGraphics());
 	delete g_window;
 
 	log::EndLog();

@@ -1,5 +1,9 @@
 #include "graphics.h"
+
 #include "dx12_helper.h"
+#include "committed_descriptor_heap.h"
+#include "dx12_texture2D.h"
+
 #include "windows_window.h"
 
 #include <d3d12.h>
@@ -20,7 +24,6 @@ static ID3D12DebugCommandQueue* g_debugCommandQueue;
 static ID3D12CommandQueue* g_commandQueue;
 
 static IDXGISwapChain3* g_swapchain;
-
 static const uint32_t bufferCount = 2;
 
 #define BACK_BUFFER_FORMAT DXGI_FORMAT_R8G8B8A8_UNORM
@@ -108,11 +111,35 @@ PUG_RESULT pug::assets::graphics::InitGraphics(
 		return PUG_RESULT_GRAPHICS_ERROR;
 	}
 
+	PUG_TRY(InitCommittedResourceHeap(
+		g_device, 
+		128, 
+		8, 
+		8, 
+		128, 
+		128));
+	
+	TextureHandle testHandle = {0};
+
+	PUG_TRY(AllocateTexture2D(
+		nullptr,
+		DXGI_FORMAT_R8G8B8A8_UNORM,
+		vmath::Vector4(0),
+		D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET,
+		1280,
+		720,
+		D3D12_RESOURCE_STATE_COMMON,
+		testHandle));
+
+	//PUG_TRY(ReleaseTexture2D(testHandle));
+		
 	return PUG_RESULT_OK;
 }
 
 PUG_RESULT pug::assets::graphics::DestroyGraphics()
 {
+	DestroyCommittedResourceHeap();
+
 	SafeRelease(g_device);
 	SafeRelease(g_debugDevice);
 	SafeRelease(g_debugInterface);

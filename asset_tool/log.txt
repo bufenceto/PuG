@@ -1,7 +1,10 @@
- -- 7/11/2017 - 15:49:44 BEGINNING LOG -- Debug Break Level set toError
+ -- 8/11/2017 - 17:11:28 BEGINNING LOG -- Debug Break Level set toError
 [INFO]: Adapter: NVIDIA GeForce GTX 1060
 [INFO]: Dedicated video memory(mb): 3019
 [INFO]: Dedicated system memory(mb): 0
 [INFO]: Picking feature level D3D_FEATURE_LEVEL_12_1
 [MESSAGE]: Succesfully created device for chosen feature level
-[INFO]: Input message was translated but not handled!
+[WARNING]: Destroying committed resource heap but a SRV page with index 0 was not empty!
+[WARNING]: Destroying committed resource heap but a RTV page with index 0 was not empty!
+ -- 8/11/2017 - 17:13:30 ENDING LOG -- 
+ 
