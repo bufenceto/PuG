@@ -18,6 +18,10 @@ using namespace pug::windows;
 
 #define MAX_TEXTURES 512
 
+static const uint32_t g_backBufferCount = 2;
+
+static uint32_t g_currentBackBufferIndex;
+
 static DX12Texture2D g_textures[MAX_TEXTURES];
 
 static ID3D12Debug* g_debugInterface;
@@ -28,7 +32,9 @@ static ID3D12DebugCommandQueue* g_debugCommandQueue;
 static ID3D12CommandQueue* g_commandQueue;
 
 static IDXGISwapChain3* g_swapchain;
-static const uint32_t bufferCount = 2;
+
+static ID3D12CommandAllocator* g_commandAllocators[g_backBufferCount];
+static ID3D12GraphicsCommandList* g_commandList;
 
 #define BACK_BUFFER_FORMAT DXGI_FORMAT_R8G8B8A8_UNORM
 
@@ -105,7 +111,7 @@ PUG_RESULT pug::assets::graphics::InitGraphics(
 		windowsWindow->GetWindowHandle(),
 		BACK_BUFFER_FORMAT,
 		windowsWindow->GetSize(),
-		bufferCount,
+		g_backBufferCount,
 		a_fullscreen,
 		a_verticalSyncInterval,
 		g_swapchain))
@@ -113,6 +119,8 @@ PUG_RESULT pug::assets::graphics::InitGraphics(
 		Error("Failed to create swapchain!");
 		return PUG_RESULT_GRAPHICS_ERROR;
 	}
+
+	g_currentBackBufferIndex = g_swapchain->GetCurrentBackBufferIndex();
 
 	PUG_TRY(InitCommittedDescriptorHeap(
 		g_device, 
@@ -122,7 +130,25 @@ PUG_RESULT pug::assets::graphics::InitGraphics(
 		128, 
 		128));
 	
-	TextureHandle testHandle = {0};
+	for(uint32_t i = 0; i < g_backBufferCount; ++i)
+	{
+		if (FAILED(g_device->CreateCommandAllocator(
+			D3D12_COMMAND_LIST_TYPE_DIRECT,
+			IID_PPV_ARGS(&g_commandAllocators[i]))))
+		{
+			Error("Failed to create command allocator for back buffer %d!", i);
+		}
+	}
+
+	if (FAILED(g_device->CreateCommandList(
+		0,
+		D3D12_COMMAND_LIST_TYPE_DIRECT,
+		g_commandAllocators[g_currentBackBufferIndex],
+		nullptr,
+		IID_PPV_ARGS(&g_commandList))))
+	{
+		Error("Failed to create command list!");
+	}
 		
 	return PUG_RESULT_OK;
 }
@@ -140,11 +166,12 @@ PUG_RESULT pug::assets::graphics::DestroyGraphics()
 
 PUG_RESULT Render()
 {
-
+	return PUG_RESULT_UNKNOW;
 }
 
 PUG_RESULT CreateTexture2D()
 {
+	return PUG_RESULT_UNKNOW;
 	//sort the data in subresource,
 	//create ID3D12Resource
 	//allocate descriptors

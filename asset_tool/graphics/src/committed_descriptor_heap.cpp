@@ -107,7 +107,6 @@ namespace graphics {
 			return *this;
 		}
 
-
 		PUG_RESULT AllocateDescriptors(
 			//D3D12_CPU_DESCRIPTOR_HANDLE& out_cpuDescriptor,
 			//D3D12_GPU_DESCRIPTOR_HANDLE& out_gpuDescriptor,
@@ -337,8 +336,6 @@ PUG_RESULT pug::assets::graphics::DestroyCommittedDescriptorHeap()
 }
 
 PUG_RESULT pug::assets::graphics::AllocateSRVDescriptors(
-	//D3D12_CPU_DESCRIPTOR_HANDLE& out_cpuDescriptor,
-	//D3D12_GPU_DESCRIPTOR_HANDLE& out_gpuDescriptor,
 	uint32_t& out_heapIndex)
 {
 	PUG_RESULT res = PUG_RESULT_UNKNOW;
@@ -363,8 +360,6 @@ PUG_RESULT pug::assets::graphics::AllocateSRVDescriptors(
 }
 
 PUG_RESULT pug::assets::graphics::AllocateRTVDescriptors(
-	//D3D12_CPU_DESCRIPTOR_HANDLE& out_cpuDescriptor,
-	//D3D12_GPU_DESCRIPTOR_HANDLE& out_gpuDescriptor,
 	uint32_t& out_heapIndex)
 {
 	PUG_RESULT res = PUG_RESULT_UNKNOW;
@@ -389,8 +384,6 @@ PUG_RESULT pug::assets::graphics::AllocateRTVDescriptors(
 }
 
 PUG_RESULT pug::assets::graphics::AllocateDSVDescriptors(
-	//D3D12_CPU_DESCRIPTOR_HANDLE& out_cpuDescriptor,
-	//D3D12_GPU_DESCRIPTOR_HANDLE& out_gpuDescriptor,
 	uint32_t& out_heapIndex)
 {
 	PUG_RESULT res = PUG_RESULT_UNKNOW;
@@ -415,8 +408,6 @@ PUG_RESULT pug::assets::graphics::AllocateDSVDescriptors(
 }
 
 PUG_RESULT pug::assets::graphics::AllocateUAVDescriptors(
-	//D3D12_CPU_DESCRIPTOR_HANDLE& out_cpuDescriptor,
-	//D3D12_GPU_DESCRIPTOR_HANDLE& out_gpuDescriptor,
 	uint32_t& out_heapIndex)
 {
 	PUG_RESULT res = PUG_RESULT_UNKNOW;
@@ -441,8 +432,6 @@ PUG_RESULT pug::assets::graphics::AllocateUAVDescriptors(
 }
 
 PUG_RESULT pug::assets::graphics::AllocateNSVUAVDescriptors(
-	//D3D12_CPU_DESCRIPTOR_HANDLE& out_cpuDescriptor,
-	//D3D12_GPU_DESCRIPTOR_HANDLE& out_gpuDescriptor,
 	uint32_t& out_heapIndex)
 {
 	PUG_RESULT res = PUG_RESULT_UNKNOW;
@@ -546,117 +535,3 @@ PUG_RESULT pug::assets::graphics::ReleaseNSVUAVDescriptors(
 	return PUG_RESULT_OK;
 }
 
-/*
-PUG_RESULT pug::assets::graphics::AllocateTexture2D(
-	ID3D12Resource* a_resource,
-	const DXGI_FORMAT a_format,
-	const vmath::Vector4& a_clearColor,
-	const D3D12_RESOURCE_FLAGS& a_resourceFlags,
-	const uint32_t a_width,
-	const uint32_t a_height,
-	const D3D12_RESOURCE_STATES& a_initialState,
-	TextureHandle& out_textureHandle)
-{
-	//find a available slot in the texture array
-	uint32_t textureIndex = PUG_INVALID_ID;
-	for (uint32_t i = 0; i < MAX_TEXTURES; ++i)
-	{
-		if (i != PUG_INVALID_ID && !m_textures[i].IsInitialized())
-		{
-			textureIndex = i;
-			break;
-		}
-	}
-	if (textureIndex == PUG_INVALID_ID)
-	{
-		return PUG_RESULT_ARRAY_FULL;
-	}
-
-	DX12Texture2D& texture = m_textures[textureIndex];
-
-	D3D12_CPU_DESCRIPTOR_HANDLE cpuRTVHandle = {};
-	D3D12_GPU_DESCRIPTOR_HANDLE gpuRTVHandle = {};
-	uint32_t rtvHeapIndex = 0;
-
-	D3D12_CPU_DESCRIPTOR_HANDLE cpuDSVHandle = {};
-	D3D12_GPU_DESCRIPTOR_HANDLE gpuDSVHandle = {};
-	uint32_t dsvHeapIndex = 0;
-
-	D3D12_CPU_DESCRIPTOR_HANDLE cpuSRVHandle = {};
-	D3D12_GPU_DESCRIPTOR_HANDLE gpuSRVHandle = {};
-	uint32_t srvHeapIndex = 0;
-
-	if (a_resourceFlags & D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET)
-	{
-		D3D12_RENDER_TARGET_VIEW_DESC rtvDesc = {};
-		rtvDesc.Format = a_format;
-		rtvDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;
-		rtvDesc.Texture2D.MipSlice = 0;
-		rtvDesc.Texture2D.PlaneSlice = 0;
-
-		PUG_TRY(AllocateRTVDescriptors(cpuRTVHandle, gpuRTVHandle, rtvHeapIndex));
-		m_device->CreateRenderTargetView(a_resource, &rtvDesc, cpuRTVHandle);
-	}
-	if (a_resourceFlags & D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL)
-	{
-		D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc = {};
-		dsvDesc.Format = a_format;
-		dsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
-		dsvDesc.Flags = D3D12_DSV_FLAG_NONE;
-
-		PUG_TRY(AllocateDSVDescriptors(cpuDSVHandle, gpuDSVHandle, dsvHeapIndex));
-		m_device->CreateDepthStencilView(a_resource, &dsvDesc, cpuDSVHandle);
-	}
-	if (!(a_resourceFlags & D3D12_RESOURCE_FLAG_DENY_SHADER_RESOURCE))
-	{
-		D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
-		srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-		srvDesc.Format = a_format;
-		srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
-		srvDesc.Texture2D.MipLevels = -1;
-		srvDesc.Texture2D.MostDetailedMip = 0;
-		srvDesc.Texture2D.PlaneSlice = 0;
-		srvDesc.Texture2D.ResourceMinLODClamp = 0.0f;
-
-		PUG_TRY(AllocateSRVDescriptors(cpuSRVHandle, gpuSRVHandle, srvHeapIndex));
-		m_device->CreateShaderResourceView(a_resource, &srvDesc, cpuSRVHandle);
-	}
-
-	texture = DX12Texture2D(
-		a_resource,
-		srvHeapIndex,
-		dsvHeapIndex,
-		rtvHeapIndex,
-		0,
-		0,
-		a_width,
-		a_height,
-		a_format,
-		a_initialState);
-
-	out_textureHandle = TextureHandle(textureIndex);
-
-	return PUG_RESULT_OK;
-}
-
-PUG_RESULT pug::assets::graphics::ReleaseTexture2D(
-	TextureHandle& inout_textureHandle)
-{
-	uint32_t textureIndex = inout_textureHandle();
-
-	if (textureIndex == PUG_INVALID_ID)
-	{
-		return PUG_RESULT_OK;
-	}
-
-	DX12Texture2D& texture = m_textures[textureIndex];
-
-	PUG_TRY(ReleaseSRVDescriptors(texture.GetSRVHeapIndex()));
-	PUG_TRY(ReleaseRTVDescriptors(texture.GetRTVHeapIndex()));
-	PUG_TRY(ReleaseDSVDescriptors(texture.GetDSVHeapIndex()));
-	PUG_TRY(ReleaseUAVDescriptors(texture.GetUAVHeapIndex()));
-	PUG_TRY(ReleaseNSVUAVDescriptors(texture.GetNSVUAVHeapIndex()));
-
-	return PUG_RESULT_OK;
-}
-*/
