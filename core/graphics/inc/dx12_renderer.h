@@ -2,6 +2,7 @@
 #include <d3d12.h>
 #include <dxgi1_4.h>
 #include "renderer_interface.h"
+#include "dx12_device.h"
 
 namespace pug {
 namespace graphics {
@@ -27,7 +28,7 @@ namespace graphics {
 		RESULT LoadPipeline(Window* a_window);
 		RESULT LoadAssets();
 
-		ID3D12Device1* m_device;
+		DX12Device* m_device;
 		IDXGISwapChain3* m_swapChain;
 
 		// Descriptor heaps
@@ -62,6 +63,15 @@ namespace graphics {
 
 		D3D12_VIEWPORT m_viewport;
 		D3D12_RECT m_scissorRect;
+		float m_aspectRatio;
+
+		// TEMPORARY ---- REMOVE!!!!!!!!
+		ID3D12Resource* m_vertexBuffer;
+		ID3D12Resource* m_indexBuffer;
+		D3D12_VERTEX_BUFFER_VIEW m_vbView;
+		D3D12_INDEX_BUFFER_VIEW m_ibView;
+
+
 	};
 }
 }

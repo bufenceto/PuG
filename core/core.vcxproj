@@ -122,15 +122,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="graphics\src\dx12_device.cpp" />
     <ClCompile Include="graphics\src\dx12_renderer.cpp" />
     <ClCompile Include="graphics\src\win32_window.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="graphics\inc\d3dx12.h" />
+    <ClInclude Include="graphics\inc\dx12_device.h" />
     <ClInclude Include="graphics\inc\dx12_renderer.h" />
+    <ClInclude Include="graphics\inc\mesh.h" />
     <ClInclude Include="graphics\inc\renderer_interface.h" />
     <ClInclude Include="graphics\inc\resource_handles.h" />
+    <ClInclude Include="graphics\inc\vertex.h" />
     <ClInclude Include="graphics\inc\win32_window.h" />
     <ClInclude Include="graphics\inc\window.h" />
     <ClInclude Include="result_codes.h" />

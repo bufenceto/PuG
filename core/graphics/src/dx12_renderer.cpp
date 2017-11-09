@@ -6,6 +6,7 @@
 #include <codecvt>
 #include <experimental\filesystem>
 #include <comdef.h>
+#include "vertex.h"
 
 namespace pug {
 namespace graphics {
@@ -73,6 +74,7 @@ namespace graphics {
 		vmath::Int2 size = a_window->GetSize();
 		m_viewport = CD3DX12_VIEWPORT(0.0f, 0.0f, size.x, size.y, 0.0f, 1.0f);
 		m_scissorRect = CD3DX12_RECT(0, 0, static_cast<LONG>(size.x), static_cast<LONG>(size.y));
+		m_aspectRatio = (float)size.x / (float)size.y;
 
 		if (!LoadPipeline(a_window))
 			return RESULT_FAILED;
@@ -137,39 +139,40 @@ namespace graphics {
 			D3D_FEATURE_LEVEL_11_0
 		};
 
-
+		ID3D12Device1* tDevice;
 		// Create D3D12 device
-		for (uint32_t i = 0; i < _countof(supportedFeatureLevels); ++i)
+
+		bool found = false;
+
+		for (uint32_t i = 0; i < _countof(supportedFeatureLevels) && !found; ++i)
 		{
 			if (SUCCEEDED(D3D12CreateDevice(adapter, supportedFeatureLevels[i], __uuidof(ID3D12Device1), nullptr)))
 			{
-				if (SUCCEEDED(D3D12CreateDevice(adapter, supportedFeatureLevels[i], IID_PPV_ARGS(&m_device))))
+				if (SUCCEEDED(D3D12CreateDevice(adapter, supportedFeatureLevels[i], IID_PPV_ARGS(&tDevice))))
 				{
 					log::Info("Created device at feature level %s.\nAdapter used: %s", GetFeatureLevelString(supportedFeatureLevels[i]), ws2s(adapterDesc.Description));
+					found = true;
+					break;
 				}
 			}
 		}
 
-		if (!m_device)
+		if (!tDevice)
 		{
 			log::Error("Failed to create D3D12 device.");
 			return RESULT_FAILED;
 		}
 
+		m_device = new DX12Device(tDevice);
+
 		// Release adapter
 		adapter->Release();
 
 		// Create a graphics (direct) command queue
+
+		if (!m_device->CreateCommandQueue(m_directCommandQueue))
 		{
-			D3D12_COMMAND_QUEUE_DESC commandQueueDesc = {};
-			commandQueueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
-			commandQueueDesc.Priority = D3D12_COMMAND_QUEUE_PRIORITY_NORMAL;
-			commandQueueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
-			if (FAILED(m_device->CreateCommandQueue(&commandQueueDesc, IID_PPV_ARGS(&m_directCommandQueue))))
-			{
-				log::Error("Failed to create a direct command queue.");
-				return RESULT_FAILED;
-			}
+			return RESULT_FAILED;
 		}
 
 		// Create swap chain
@@ -202,68 +205,41 @@ namespace graphics {
 		}
 
 		// Create RTV descriptor heap
+		if (!m_device->CreateDescriptorHeap(m_rtvDescriptorHeap, D3D12_DESCRIPTOR_HEAP_TYPE_RTV, BufferCount))
 		{
-			D3D12_DESCRIPTOR_HEAP_DESC desc = {};
-			desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-			desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
-			desc.NumDescriptors = BufferCount;
-
-			if (FAILED(m_device->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&m_rtvDescriptorHeap))))
-			{
-				log::Error("Error creating RTV descriptor heap.");
-				return RESULT_FAILED;
-			}
-
-			m_rtvDescriptorSize = m_device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+			return RESULT_FAILED;
 		}
+
+		m_rtvDescriptorSize = m_device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 
 
 		// Create render targets and command allocators
+		CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle = CD3DX12_CPU_DESCRIPTOR_HANDLE(m_rtvDescriptorHeap->GetCPUDescriptorHandleForHeapStart());
+
+		for (uint32_t i = 0; i < BufferCount; ++i)
 		{
-			CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle = CD3DX12_CPU_DESCRIPTOR_HANDLE(m_rtvDescriptorHeap->GetCPUDescriptorHandleForHeapStart());
-
-			for (uint32_t i = 0; i < BufferCount; ++i)
+			if (FAILED(m_swapChain->GetBuffer(i, IID_PPV_ARGS(&m_OMTargets[i]))))
 			{
-				if (FAILED(m_swapChain->GetBuffer(i, IID_PPV_ARGS(&m_OMTargets[i]))))
-				{
-					log::Error("Error getting swap chain buffer[%d].", i);
-					return RESULT_FAILED;
-				}
-				m_device->CreateRenderTargetView(m_OMTargets[i], nullptr, rtvHandle);
-				rtvHandle.Offset(1, m_rtvDescriptorSize);
+				log::Error("Error getting swap chain buffer[%d].", i);
+				return RESULT_FAILED;
+			}
+			m_device->CreateRenderTargetView(m_OMTargets[i], {}, rtvHandle);
+			rtvHandle.Offset(1, m_rtvDescriptorSize);
 
-				if (FAILED(m_device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&m_directCommandAllocators[i]))))
-				{
-					log::Error("Error creating command allocators.");
-					return RESULT_FAILED;
-				}
+			if (!m_device->CreateCommandAllocator(m_directCommandAllocators[i]))
+			{
+				return RESULT_FAILED;
 			}
 		}
 
 		// Create root signature
-		{
-			CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC desc;
-			desc.Init_1_1(0, nullptr, 0, nullptr, D3D12_ROOT_SIGNATURE_FLAG_NONE);
 
-			ID3DBlob* rootDescriptionBlob;
-			ID3DBlob* errorBlob;
-			if (FAILED(D3DX12SerializeVersionedRootSignature(&desc, D3D_ROOT_SIGNATURE_VERSION_1_0, &rootDescriptionBlob, &errorBlob)))
-			{
-				log::Error("Failed to serialize root signature.\nError: %s", (char*)errorBlob->GetBufferPointer());
-				errorBlob->Release();
-				return RESULT_FAILED;
-			}
-			
-			if (FAILED(m_device->CreateRootSignature(
-				0,
-				rootDescriptionBlob->GetBufferPointer(),
-				rootDescriptionBlob->GetBufferSize(),
-				IID_PPV_ARGS(&m_rootSignature)
-			)))
-			{
-				log::Error("Failed to create root signature.");
-				return RESULT_FAILED;
-			}
+		CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC desc;
+		desc.Init_1_1(0, nullptr, 0, nullptr, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
+
+		if(!m_device->CreateVersionedRootSignature(m_rootSignature, desc, D3D_ROOT_SIGNATURE_VERSION_1_0))
+		{
+			return RESULT_FAILED;
 		}
 
 		// Create pipeline state object
@@ -282,12 +258,24 @@ namespace graphics {
 
 			if (FAILED(D3DCompileFromFile(shaderPath.c_str(), nullptr, nullptr, "VSMain", "vs_5_0", 0, 0, &vertexShader, &error)))
 			{
-				printf("Error compiling vertex shader. Error message: %s\n", (char*)error->GetBufferPointer());
+				log::Error("Error compiling vertex shader. Error message: %s", (char*)error->GetBufferPointer());
 			}
 			if (FAILED(D3DCompileFromFile(shaderPath.c_str(), nullptr, nullptr, "PSMain", "ps_5_0", 0, 0, &pixelShader, &error)))
 			{
-				printf("Error compiling pixel shader. Error message: %s\n", (char*)error->GetBufferPointer());
+				log::Error("Error compiling pixel shader. Error message: %s", (char*)error->GetBufferPointer());
 			}
+
+			// Create input layout
+
+			D3D12_INPUT_ELEMENT_DESC elementDescs[] =
+			{
+				{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0},
+				{"COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0}
+			};
+
+			D3D12_INPUT_LAYOUT_DESC inputLayoutDesc = {};
+			inputLayoutDesc.NumElements = _countof(elementDescs);
+			inputLayoutDesc.pInputElementDescs = elementDescs;
 
 			// Create PSO
 
@@ -303,10 +291,10 @@ namespace graphics {
 			desc.SampleMask = UINT_MAX;
 			desc.VS = CD3DX12_SHADER_BYTECODE(vertexShader);
 			desc.PS = CD3DX12_SHADER_BYTECODE(pixelShader);
+			desc.InputLayout = inputLayoutDesc;
 			
-			if (FAILED(m_device->CreateGraphicsPipelineState(&desc, IID_PPV_ARGS(&m_PSO))))
+			if (!m_device->CreateGraphicsPipelineState(m_PSO, desc))
 			{
-				log::Error("Failed to create the main graphics pipeline state object");
 				return RESULT_FAILED;
 			}
 
@@ -319,15 +307,13 @@ namespace graphics {
 
 		// Create command list
 
-		if (FAILED(m_device->CreateCommandList(
-			0,
-			D3D12_COMMAND_LIST_TYPE_DIRECT,
+		if (!m_device->CreateGraphicsCommandList(
+			m_directCommandList,
 			m_directCommandAllocators[m_swapChain->GetCurrentBackBufferIndex()],
-			m_PSO,
-			IID_PPV_ARGS(&m_directCommandList)
-		)))
+			D3D12_COMMAND_LIST_TYPE_DIRECT,
+			m_PSO
+		))
 		{
-			log::Error("Failed to create direct command list.");
 			return RESULT_FAILED;
 		}
 
@@ -335,9 +321,8 @@ namespace graphics {
 
 		// Create synchroniztion objects
 		{
-			if (FAILED(m_device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&m_fence))))
+			if (!m_device->CreateFence(m_fence))
 			{
-				log::Error("Failed to create fence sync object.");
 				return RESULT_FAILED;
 			}
 
@@ -356,7 +341,23 @@ namespace graphics {
 
 	RESULT DX12Renderer::LoadAssets()
 	{
+		Vertex triangleVertices[] =
+		{
+			{ { -0.25f, 0.25f * m_aspectRatio, 0.0f },{ 1.0f, 0.0f, 0.0f, 1.0f } },
+			{ { 0.25f, 0.25f * m_aspectRatio, 0.0f },{ 0.0f, 1.0f, 0.0f, 1.0f } },
+			{ { 0.25f, -0.25f * m_aspectRatio, 0.0f },{ 0.0f, 0.0f, 1.0f, 1.0f } },
+			{ { -0.25f, -0.25f * m_aspectRatio, 0.0f },{ 1.0f, 1.0f, 1.0f, 1.0f } }
+		};
 
+		uint32_t indices[] =
+		{
+			0, 1, 3, 3, 1, 2
+		};
+
+		if (!m_device->CreateVertexAndIndexBuffer(m_vertexBuffer, m_indexBuffer, m_vbView, m_ibView, triangleVertices, _countof(triangleVertices), indices, _countof(indices)))
+		{
+			return RESULT_FAILED;
+		}
 
 		return RESULT_OK;
 	}
@@ -378,6 +379,8 @@ namespace graphics {
 		m_directCommandAllocators[m_currentFrameIndex]->Reset();
 		m_directCommandList->Reset(m_directCommandAllocators[m_currentFrameIndex], m_PSO);
 
+		m_directCommandList->SetGraphicsRootSignature(m_rootSignature);
+
 		CD3DX12_RESOURCE_BARRIER renderTargetResourceBarrier =
 			CD3DX12_RESOURCE_BARRIER::Transition(m_OMTargets[m_currentFrameIndex], D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
 
@@ -387,11 +390,16 @@ namespace graphics {
 		rtvHandle.Offset(m_currentFrameIndex, m_rtvDescriptorSize);
 
 		m_directCommandList->OMSetRenderTargets(1, &rtvHandle, false, nullptr);
-		//m_directCommandList->RSSetViewports(1, &m_viewport);
-		//m_directCommandList->RSSetScissorRects(1, &m_scissorRect);
+		m_directCommandList->RSSetViewports(1, &m_viewport);
+		m_directCommandList->RSSetScissorRects(1, &m_scissorRect);
 
 		float color[4] = { 0.0f, 0.4f, 0.5f, 0.5f };
 		m_directCommandList->ClearRenderTargetView(rtvHandle, color, 0, nullptr);
+
+		m_directCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		m_directCommandList->IASetVertexBuffers(0, 1, &m_vbView);
+		m_directCommandList->IASetIndexBuffer(&m_ibView);
+		m_directCommandList->DrawIndexedInstanced(6, 1, 0, 0, 0);
 
 		// Indicate that the render target will now be used to present when the command list is done executing.
 		CD3DX12_RESOURCE_BARRIER presentResourceBarrier =
@@ -407,6 +415,7 @@ namespace graphics {
 		};
 
 		m_directCommandQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
+		m_swapChain->Present(1, 0);
 	}
 
 	void DX12Renderer::TransitionToNextFrame()
@@ -430,8 +439,6 @@ namespace graphics {
 		}
 
 		m_fenceValues[m_currentFrameIndex] = currFenceValue + 1;
-
-		m_swapChain->Present(0, 0);
 	}
 
 	void DX12Renderer::Destroy()

@@ -1,11 +1,11 @@
 
 #include "logger.h"
-#include "win32_window.h"
+#include "window.h"
 #include "dx12_renderer.h"
 #include "vmath\vmath.h"
 
 using namespace pug;
-using namespace graphics;
+using namespace pug::graphics;
 
 int main()
 {
