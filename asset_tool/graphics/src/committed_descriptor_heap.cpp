@@ -166,6 +166,19 @@ namespace graphics {
 			return 1;
 		}
 
+		D3D12_CPU_DESCRIPTOR_HANDLE GetCPUDescriptor(const uint32_t a_descriptorIndex)
+		{
+			D3D12_CPU_DESCRIPTOR_HANDLE cpuDescriptor = m_heap->GetCPUDescriptorHandleForHeapStart();
+			cpuDescriptor.ptr += (a_descriptorIndex * m_handleIncrement);
+			return cpuDescriptor;
+		}
+		D3D12_GPU_DESCRIPTOR_HANDLE GetGPUDescriptor(const uint32_t a_descriptorIndex)
+		{
+			D3D12_GPU_DESCRIPTOR_HANDLE gpuDescriptor = m_heap->GetGPUDescriptorHandleForHeapStart();
+			gpuDescriptor.ptr += (a_descriptorIndex * m_handleIncrement);
+			return gpuDescriptor;
+		}
+
 	private:
 		ID3D12DescriptorHeap* m_heap;// 8 bytes
 		uint8_t* m_flagArray;// 8 bytes
@@ -335,10 +348,10 @@ PUG_RESULT pug::assets::graphics::DestroyCommittedDescriptorHeap()
 	return PUG_RESULT_OK;
 }
 
-PUG_RESULT pug::assets::graphics::AllocateSRVDescriptors(
+PUG_RESULT pug::assets::graphics::AllocateComittedSRVDescriptors(
 	uint32_t& out_heapIndex)
 {
-	PUG_RESULT res = PUG_RESULT_UNKNOW;
+	PUG_RESULT res = PUG_RESULT_UNKNOWN;
 	uint32_t pageIndex = 0;
 	uint32_t descriptorIndex = 0;
 	do
@@ -359,10 +372,10 @@ PUG_RESULT pug::assets::graphics::AllocateSRVDescriptors(
 	return PUG_RESULT_OK;
 }
 
-PUG_RESULT pug::assets::graphics::AllocateRTVDescriptors(
+PUG_RESULT pug::assets::graphics::AllocateComittedRTVDescriptors(
 	uint32_t& out_heapIndex)
 {
-	PUG_RESULT res = PUG_RESULT_UNKNOW;
+	PUG_RESULT res = PUG_RESULT_UNKNOWN;
 	uint32_t pageIndex = 0;
 	uint32_t descriptorIndex = 0;
 	do
@@ -383,10 +396,10 @@ PUG_RESULT pug::assets::graphics::AllocateRTVDescriptors(
 	return PUG_RESULT_OK;
 }
 
-PUG_RESULT pug::assets::graphics::AllocateDSVDescriptors(
+PUG_RESULT pug::assets::graphics::AllocateComittedDSVDescriptors(
 	uint32_t& out_heapIndex)
 {
-	PUG_RESULT res = PUG_RESULT_UNKNOW;
+	PUG_RESULT res = PUG_RESULT_UNKNOWN;
 	uint32_t pageIndex = 0;
 	uint32_t descriptorIndex = 0;
 	do
@@ -407,10 +420,10 @@ PUG_RESULT pug::assets::graphics::AllocateDSVDescriptors(
 	return PUG_RESULT_OK;
 }
 
-PUG_RESULT pug::assets::graphics::AllocateUAVDescriptors(
+PUG_RESULT pug::assets::graphics::AllocateComittedUAVDescriptors(
 	uint32_t& out_heapIndex)
 {
-	PUG_RESULT res = PUG_RESULT_UNKNOW;
+	PUG_RESULT res = PUG_RESULT_UNKNOWN;
 	uint32_t pageIndex = 0;
 	uint32_t descriptorIndex = 0;
 	do
@@ -431,10 +444,10 @@ PUG_RESULT pug::assets::graphics::AllocateUAVDescriptors(
 	return PUG_RESULT_OK;
 }
 
-PUG_RESULT pug::assets::graphics::AllocateNSVUAVDescriptors(
+PUG_RESULT pug::assets::graphics::AllocateComittedNSVUAVDescriptors(
 	uint32_t& out_heapIndex)
 {
-	PUG_RESULT res = PUG_RESULT_UNKNOW;
+	PUG_RESULT res = PUG_RESULT_UNKNOWN;
 	uint32_t pageIndex = 0;
 	uint32_t descriptorIndex = 0;
 	do
@@ -455,7 +468,7 @@ PUG_RESULT pug::assets::graphics::AllocateNSVUAVDescriptors(
 	return PUG_RESULT_OK;
 }
 
-PUG_RESULT pug::assets::graphics::ReleaseSRVDescriptors(
+PUG_RESULT pug::assets::graphics::ReleaseComittedSRVDescriptors(
 	const uint32_t& inout_heapIndex)
 {
 	uint32_t pageSize = m_srvHeaps[0].GetMaxDescriptorsPerPage();
@@ -471,7 +484,7 @@ PUG_RESULT pug::assets::graphics::ReleaseSRVDescriptors(
 	return PUG_RESULT_OK;
 }
 
-PUG_RESULT pug::assets::graphics::ReleaseRTVDescriptors(
+PUG_RESULT pug::assets::graphics::ReleaseComittedRTVDescriptors(
 	const uint32_t& inout_heapIndex)
 {
 	uint32_t pageSize = m_rtvHeaps[0].GetMaxDescriptorsPerPage();
@@ -487,7 +500,7 @@ PUG_RESULT pug::assets::graphics::ReleaseRTVDescriptors(
 	return PUG_RESULT_OK;
 }
 
-PUG_RESULT pug::assets::graphics::ReleaseDSVDescriptors(
+PUG_RESULT pug::assets::graphics::ReleaseComittedDSVDescriptors(
 	const uint32_t& inout_heapIndex)
 {
 	uint32_t pageSize = m_dsvHeaps[0].GetMaxDescriptorsPerPage();
@@ -503,7 +516,7 @@ PUG_RESULT pug::assets::graphics::ReleaseDSVDescriptors(
 	return PUG_RESULT_OK;
 }
 
-PUG_RESULT pug::assets::graphics::ReleaseUAVDescriptors(
+PUG_RESULT pug::assets::graphics::ReleaseComittedUAVDescriptors(
 	const uint32_t& inout_heapIndex)
 {
 	uint32_t pageSize = m_uavHeaps[0].GetMaxDescriptorsPerPage();
@@ -519,7 +532,7 @@ PUG_RESULT pug::assets::graphics::ReleaseUAVDescriptors(
 	return PUG_RESULT_OK;
 }
 
-PUG_RESULT pug::assets::graphics::ReleaseNSVUAVDescriptors(
+PUG_RESULT pug::assets::graphics::ReleaseComittedNSVUAVDescriptors(
 	const uint32_t& inout_heapIndex)
 {
 	uint32_t pageSize = m_nsvUAVHeaps[0].GetMaxDescriptorsPerPage();
@@ -535,3 +548,34 @@ PUG_RESULT pug::assets::graphics::ReleaseNSVUAVDescriptors(
 	return PUG_RESULT_OK;
 }
 
+PUG_RESULT pug::assets::graphics::GetCommittedSRVDescriptors(
+	const uint32_t& rtvDescriptorIndex,
+	D3D12_CPU_DESCRIPTOR_HANDLE& out_cpuHandle,
+	D3D12_GPU_DESCRIPTOR_HANDLE& out_gpuHandle)
+{
+	uint32_t pageIndex = rtvDescriptorIndex / m_srvHeaps[0].GetMaxDescriptorsPerPage();
+	uint32_t descriptorIndex = rtvDescriptorIndex % m_srvHeaps[0].GetMaxDescriptorsPerPage();
+
+	PUG_ASSERT(pageIndex < m_srvHeaps.size(), "Page index out of bounds");
+
+	out_cpuHandle = m_srvHeaps[pageIndex].GetCPUDescriptor(descriptorIndex);
+	out_gpuHandle = m_srvHeaps[pageIndex].GetGPUDescriptor(descriptorIndex);
+
+	return PUG_RESULT_OK;
+}
+
+PUG_RESULT pug::assets::graphics::GetCommittedRTVDescriptors(
+	const uint32_t& rtvDescriptorIndex,
+	D3D12_CPU_DESCRIPTOR_HANDLE& out_cpuHandle,
+	D3D12_GPU_DESCRIPTOR_HANDLE& out_gpuHandle)
+{
+	uint32_t pageIndex = rtvDescriptorIndex / m_rtvHeaps[0].GetMaxDescriptorsPerPage();
+	uint32_t descriptorIndex = rtvDescriptorIndex % m_rtvHeaps[0].GetMaxDescriptorsPerPage();
+
+	PUG_ASSERT(pageIndex < m_rtvHeaps.size(), "Page index out of bounds");
+
+	out_cpuHandle = m_rtvHeaps[pageIndex].GetCPUDescriptor(descriptorIndex);
+	out_gpuHandle = m_rtvHeaps[pageIndex].GetGPUDescriptor(descriptorIndex);
+
+	return PUG_RESULT_OK;
+}

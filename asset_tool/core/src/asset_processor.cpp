@@ -1,16 +1,29 @@
 #include "core/inc/asset_processor.h"
 
+#include "pug_funcs.h"
+
 #include "core/inc/macro.h"
 #include "graphics/inc/window.h"
 #include "graphics/inc/graphics.h"
 
-#include <experimental\filesystem>
+#include "time/inc/timer.h"
+
+#include <experimental/filesystem>
 
 using namespace pug;
 using namespace pug::platform;
+using namespace pug::time;
 using namespace vmath;
 
 static Window* g_window;
+static Timer g_timer;
+
+static float deltaTime;
+
+float pug::assets::GetDeltaTime()
+{
+	return deltaTime;
+}
 
 void pug::assets::InitAssetProcessor()
 {
@@ -24,9 +37,12 @@ void pug::assets::InitAssetProcessor()
 
 void pug::assets::RunAssetProcessor()
 {
-	//while (1)
+	while (1)
 	{
+		deltaTime = g_timer.GetFrameDelta();
 		g_window->Update();
+
+		PUG_TRY(graphics::Render());
 	}
 }
 

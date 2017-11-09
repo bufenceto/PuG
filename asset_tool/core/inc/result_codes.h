@@ -3,7 +3,7 @@
 
 #define PUG_RESULT uint32_t
 
-#define PUG_RESULT_UNKNOW 0
+#define PUG_RESULT_UNKNOWN 0
 #define PUG_RESULT_OK 1
 
 #define PUG_RESULT_GRAPHICS_ERROR 2

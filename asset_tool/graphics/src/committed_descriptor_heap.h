@@ -28,42 +28,36 @@ namespace graphics {
 
 	PUG_RESULT DestroyCommittedDescriptorHeap();
 
-	PUG_RESULT AllocateSRVDescriptors(
+	PUG_RESULT AllocateComittedSRVDescriptors(
 		uint32_t& out_heapIndex);
-	PUG_RESULT AllocateRTVDescriptors(
+	PUG_RESULT AllocateComittedRTVDescriptors(
 		uint32_t& out_heapIndex);
-	PUG_RESULT AllocateDSVDescriptors(
+	PUG_RESULT AllocateComittedDSVDescriptors(
 		uint32_t& out_heapIndex);
-	PUG_RESULT AllocateUAVDescriptors(
+	PUG_RESULT AllocateComittedUAVDescriptors(
 		uint32_t& out_heapIndex);
-	PUG_RESULT AllocateNSVUAVDescriptors(
+	PUG_RESULT AllocateComittedNSVUAVDescriptors(
 		uint32_t& out_heapIndex);
 
-	PUG_RESULT ReleaseSRVDescriptors(
+	PUG_RESULT ReleaseComittedSRVDescriptors(
 		const uint32_t& inout_heapIndex);
-	PUG_RESULT ReleaseRTVDescriptors(
+	PUG_RESULT ReleaseComittedRTVDescriptors(
 		const uint32_t& inout_heapIndex);
-	PUG_RESULT ReleaseDSVDescriptors(
+	PUG_RESULT ReleaseComittedDSVDescriptors(
 		const uint32_t& inout_heapIndex);
-	PUG_RESULT ReleaseUAVDescriptors(
+	PUG_RESULT ReleaseComittedUAVDescriptors(
 		const uint32_t& inout_heapIndex);
-	PUG_RESULT ReleaseNSVUAVDescriptors(
+	PUG_RESULT ReleaseComittedNSVUAVDescriptors(
 		const uint32_t& inout_heapIndex);
 
-	/*
-	PUG_RESULT AllocateTexture2D(
-		ID3D12Resource* resource,
-		const DXGI_FORMAT format,
-		const vmath::Vector4& clearColor,
-		const D3D12_RESOURCE_FLAGS& resourceFlags,
-		const uint32_t width,
-		const uint32_t height,
-		const D3D12_RESOURCE_STATES& a_initialState,
-		TextureHandle& out_textureHandle);
-
-	PUG_RESULT ReleaseTexture2D(
-		TextureHandle& inout_textureHandle);
-	*/
+	PUG_RESULT GetCommittedSRVDescriptors(
+		const uint32_t& rtvDescriptorIndex,
+		D3D12_CPU_DESCRIPTOR_HANDLE& out_cpuHandle,
+		D3D12_GPU_DESCRIPTOR_HANDLE& out_gpuHandle);
+	PUG_RESULT GetCommittedRTVDescriptors(
+		const uint32_t& rtvDescriptorIndex,
+		D3D12_CPU_DESCRIPTOR_HANDLE& out_cpuHandle,
+		D3D12_GPU_DESCRIPTOR_HANDLE& out_gpuHandle);
 }
 }
 }

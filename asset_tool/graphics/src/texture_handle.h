@@ -31,7 +31,7 @@ public:														\
 		return *this;										\
 	}														\
 															\
-	uint32_t operator()()									\
+	operator uint32_t()										\
 	{														\
 		return m_index;										\
 	}														\
@@ -41,3 +41,4 @@ private:													\
 }; 
 
 DeclareHandle(TextureHandle)
+DeclareHandle(MeshHandle)
