@@ -109,8 +109,8 @@ namespace graphics {
 
 
 		PUG_RESULT AllocateDescriptors(
-			D3D12_CPU_DESCRIPTOR_HANDLE& out_cpuDescriptor,
-			D3D12_GPU_DESCRIPTOR_HANDLE& out_gpuDescriptor,
+			//D3D12_CPU_DESCRIPTOR_HANDLE& out_cpuDescriptor,
+			//D3D12_GPU_DESCRIPTOR_HANDLE& out_gpuDescriptor,
 			uint32_t& out_descriptorIndex)
 		{
 			for (uint32_t i = 0; i < m_maxDescriptors; ++i)
@@ -119,13 +119,13 @@ namespace graphics {
 				{//this slot is free
 					m_flagArray[i] = DESCRIPTOR_TAKEN;//flag as taken
 
-					D3D12_CPU_DESCRIPTOR_HANDLE cpuDescriptor = m_heap->GetCPUDescriptorHandleForHeapStart();
-					cpuDescriptor.ptr += (i * m_handleIncrement);
-					out_cpuDescriptor = cpuDescriptor;
+					//D3D12_CPU_DESCRIPTOR_HANDLE cpuDescriptor = m_heap->GetCPUDescriptorHandleForHeapStart();
+					//cpuDescriptor.ptr += (i * m_handleIncrement);
+					//out_cpuDescriptor = cpuDescriptor;
 
-					D3D12_GPU_DESCRIPTOR_HANDLE gpuDescriptor = m_heap->GetGPUDescriptorHandleForHeapStart();
-					gpuDescriptor.ptr += (i * m_handleIncrement);
-					out_gpuDescriptor = gpuDescriptor;
+					//D3D12_GPU_DESCRIPTOR_HANDLE gpuDescriptor = m_heap->GetGPUDescriptorHandleForHeapStart();
+					//gpuDescriptor.ptr += (i * m_handleIncrement);
+					//out_gpuDescriptor = gpuDescriptor;
 
 					out_descriptorIndex = i;
 
@@ -194,8 +194,6 @@ static uint32_t m_dsvHeapCapacity;
 static uint32_t m_uavHeapCapacity;
 static uint32_t m_nsvUAVHeapCapacity;
 
-DX12Texture2D m_textures[MAX_TEXTURES];
-
 ID3D12Device* m_device;
 
 void AddSRVHeap();
@@ -254,322 +252,7 @@ void AddnsvUAVHeap()
 			false));
 }
 
-PUG_RESULT AllocateSRVDescriptors(
-	D3D12_CPU_DESCRIPTOR_HANDLE& out_cpuDescriptor,
-	D3D12_GPU_DESCRIPTOR_HANDLE& out_gpuDescriptor,
-	uint32_t& out_heapIndex)
-{
-	PUG_RESULT res = PUG_RESULT_UNKNOW;
-	uint32_t pageIndex = 0;
-	uint32_t descriptorIndex = 0;
-	do
-	{
-		res = m_srvHeaps[pageIndex].AllocateDescriptors(out_cpuDescriptor, out_gpuDescriptor, descriptorIndex);
-		if (res == PUG_RESULT_ARRAY_FULL)
-		{//if the heap reported that its page is full we add a new heap and allocate from there
-			++pageIndex;
-			if (pageIndex == m_srvHeaps.size())
-			{
-				AddSRVHeap();
-			}
-		}
-	} while (res != PUG_RESULT_OK);
-
-	out_heapIndex = pageIndex * m_srvHeaps[pageIndex].GetMaxDescriptorsPerPage() + descriptorIndex;
-
-	return PUG_RESULT_OK;
-}
-
-PUG_RESULT AllocateRTVDescriptors(
-	D3D12_CPU_DESCRIPTOR_HANDLE& out_cpuDescriptor,
-	D3D12_GPU_DESCRIPTOR_HANDLE& out_gpuDescriptor,
-	uint32_t& out_heapIndex)
-{
-	PUG_RESULT res = PUG_RESULT_UNKNOW;
-	uint32_t pageIndex = 0;
-	uint32_t descriptorIndex = 0;
-	do
-	{
-		res = m_rtvHeaps[pageIndex].AllocateDescriptors(out_cpuDescriptor, out_gpuDescriptor, descriptorIndex);
-		if (res == PUG_RESULT_ARRAY_FULL)
-		{//if the heap reported that its page is full we add a new heap and allocate from there
-			++pageIndex;
-			if (pageIndex == m_rtvHeaps.size())
-			{
-				AddRTVHeap();
-			}
-		}
-	} while (res != PUG_RESULT_OK);
-
-	out_heapIndex = pageIndex * m_rtvHeaps[pageIndex].GetMaxDescriptorsPerPage() + descriptorIndex;
-
-	return PUG_RESULT_OK;
-}
-
-PUG_RESULT AllocateDSVDescriptors(
-	D3D12_CPU_DESCRIPTOR_HANDLE& out_cpuDescriptor,
-	D3D12_GPU_DESCRIPTOR_HANDLE& out_gpuDescriptor,
-	uint32_t& out_heapIndex)
-{
-	PUG_RESULT res = PUG_RESULT_UNKNOW;
-	uint32_t pageIndex = 0;
-	uint32_t descriptorIndex = 0;
-	do
-	{
-		res = m_dsvHeaps[pageIndex].AllocateDescriptors(out_cpuDescriptor, out_gpuDescriptor, descriptorIndex);
-		if (res == PUG_RESULT_ARRAY_FULL)
-		{//if the heap reported that its page is full we add a new heap and allocate from there
-			++pageIndex;
-			if (pageIndex == m_dsvHeaps.size())
-			{
-				AddDSVHeap();
-			}
-		}
-	} while (res != PUG_RESULT_OK);
-
-	out_heapIndex = pageIndex * m_dsvHeaps[pageIndex].GetMaxDescriptorsPerPage() + descriptorIndex;
-
-	return PUG_RESULT_OK;
-}
-
-PUG_RESULT AllocateUAVDescriptors(
-	D3D12_CPU_DESCRIPTOR_HANDLE& out_cpuDescriptor,
-	D3D12_GPU_DESCRIPTOR_HANDLE& out_gpuDescriptor,
-	uint32_t& out_heapIndex)
-{
-	PUG_RESULT res = PUG_RESULT_UNKNOW;
-	uint32_t pageIndex = 0;
-	uint32_t descriptorIndex = 0;
-	do
-	{
-		res = m_uavHeaps[pageIndex].AllocateDescriptors(out_cpuDescriptor, out_gpuDescriptor, descriptorIndex);
-		if (res == PUG_RESULT_ARRAY_FULL)
-		{//if the heap reported that its page is full we add a new heap and allocate from there
-			++pageIndex;
-			if (pageIndex == m_uavHeaps.size())
-			{
-				AddUAVHeap();
-			}
-		}
-	} while (res != PUG_RESULT_OK);
-
-	out_heapIndex = pageIndex * m_uavHeaps[pageIndex].GetMaxDescriptorsPerPage() + descriptorIndex;
-
-	return PUG_RESULT_OK;
-}
-
-PUG_RESULT AllocateNSVUAVDescriptors(
-	D3D12_CPU_DESCRIPTOR_HANDLE& out_cpuDescriptor,
-	D3D12_GPU_DESCRIPTOR_HANDLE& out_gpuDescriptor,
-	uint32_t& out_heapIndex)
-{
-	PUG_RESULT res = PUG_RESULT_UNKNOW;
-	uint32_t pageIndex = 0;
-	uint32_t descriptorIndex = 0;
-	do
-	{
-		res = m_nsvUAVHeaps[pageIndex].AllocateDescriptors(out_cpuDescriptor, out_gpuDescriptor, descriptorIndex);
-		if (res == PUG_RESULT_ARRAY_FULL)
-		{//if the heap reported that its page is full we add a new heap and allocate from there
-			++pageIndex;
-			if (pageIndex == m_nsvUAVHeaps.size())
-			{
-				AddnsvUAVHeap();
-			}
-		}
-	} while (res != PUG_RESULT_OK);
-
-	out_heapIndex = pageIndex * m_nsvUAVHeaps[pageIndex].GetMaxDescriptorsPerPage() + descriptorIndex;
-
-	return PUG_RESULT_OK;
-}
-
-PUG_RESULT ReleaseSRVDescriptors(
-	const uint32_t& inout_heapIndex)
-{
-	uint32_t pageSize = m_srvHeaps[0].GetMaxDescriptorsPerPage();
-
-	if (inout_heapIndex != PUG_INVALID_ID)
-	{
-		uint32_t pageIndex = inout_heapIndex / pageSize;
-		uint32_t descriptorIndex = inout_heapIndex % pageSize;
-
-		m_srvHeaps[pageIndex].ReleaseDescriptors(descriptorIndex);
-	}
-
-	return PUG_RESULT_OK;
-}
-
-PUG_RESULT ReleaseRTVDescriptors(
-	const uint32_t& inout_heapIndex)
-{
-	uint32_t pageSize = m_rtvHeaps[0].GetMaxDescriptorsPerPage();
-
-	if (inout_heapIndex != PUG_INVALID_ID)
-	{
-		uint32_t pageIndex = inout_heapIndex / pageSize;
-		uint32_t descriptorIndex = inout_heapIndex % pageSize;
-
-		m_rtvHeaps[pageIndex].ReleaseDescriptors(descriptorIndex);
-	}
-
-	return PUG_RESULT_OK;
-}
-
-PUG_RESULT ReleaseDSVDescriptors(
-	const uint32_t& inout_heapIndex)
-{
-	uint32_t pageSize = m_dsvHeaps[0].GetMaxDescriptorsPerPage();
-
-	if (inout_heapIndex != PUG_INVALID_ID)
-	{
-		uint32_t pageIndex = inout_heapIndex / pageSize;
-		uint32_t descriptorIndex = inout_heapIndex % pageSize;
-
-		m_dsvHeaps[pageIndex].ReleaseDescriptors(descriptorIndex);
-	}
-
-	return PUG_RESULT_OK;
-}
-
-PUG_RESULT ReleaseUAVDescriptors(
-	const uint32_t& inout_heapIndex)
-{
-	uint32_t pageSize = m_uavHeaps[0].GetMaxDescriptorsPerPage();
-
-	if (inout_heapIndex != PUG_INVALID_ID)
-	{
-		uint32_t pageIndex = inout_heapIndex / pageSize;
-		uint32_t descriptorIndex = inout_heapIndex % pageSize;
-
-		m_uavHeaps[pageIndex].ReleaseDescriptors(descriptorIndex);
-	}
-
-	return PUG_RESULT_OK;
-}
-
-PUG_RESULT ReleaseNSVUAVDescriptors(
-	const uint32_t& inout_heapIndex)
-{
-	uint32_t pageSize = m_nsvUAVHeaps[0].GetMaxDescriptorsPerPage();
-
-	if (inout_heapIndex != PUG_INVALID_ID)
-	{
-		uint32_t pageIndex = inout_heapIndex / pageSize;
-		uint32_t descriptorIndex = inout_heapIndex % pageSize;
-
-		m_nsvUAVHeaps[pageIndex].ReleaseDescriptors(descriptorIndex);
-	}
-
-	return PUG_RESULT_OK;
-}
-
-/*
-
-CommittedDescriptorHeap::CommittedDescriptorHeap()
-	: m_device(nullptr)
-	, m_srvHeapCapacity(0)
-	, m_rtvHeapCapacity(0)
-	, m_dsvHeapCapacity(0)
-	, m_uavHeapCapacity(0)
-	, m_nsvUAVHeapCapacity(0)
-{
-	PUG_ZERO_MEM(m_textures);
-}
-
-CommittedDescriptorHeap::CommittedDescriptorHeap(
-	ID3D12Device* a_device, 
-	uint32_t a_srvHeapCapacity,
-	uint32_t a_dsvHeapCapacity,
-	uint32_t a_rtvHeapCapacity,
-	uint32_t a_uavHeapCapacity,
-	uint32_t a_nsvUAVHeapCapacity)
-		: m_device(a_device)
-		, m_srvHeapCapacity(a_srvHeapCapacity)
-		, m_rtvHeapCapacity(a_dsvHeapCapacity)
-		, m_dsvHeapCapacity(a_rtvHeapCapacity)
-		, m_uavHeapCapacity(a_uavHeapCapacity)
-		, m_nsvUAVHeapCapacity(a_nsvUAVHeapCapacity)
-{
-	AddSRVHeap();
-	AddDSVHeap();
-	AddRTVHeap();
-	AddUAVHeap();
-	AddnsvUAVHeap();
-
-	PUG_ZERO_MEM(m_textures);
-	//add an empty texture to slot 0, texture handles containing 0 are invalid
-}
-
-CommittedDescriptorHeap::~CommittedDescriptorHeap()
-{
-
-}
-
-CommittedDescriptorHeap::CommittedDescriptorHeap(const CommittedDescriptorHeap& other)
-	: m_device(other.m_device)
-	, m_srvHeapCapacity(other.m_srvHeapCapacity)
-	, m_rtvHeapCapacity(other.m_dsvHeapCapacity)
-	, m_dsvHeapCapacity(other.m_rtvHeapCapacity)
-	, m_uavHeapCapacity(other.m_uavHeapCapacity)
-	, m_nsvUAVHeapCapacity(other.m_nsvUAVHeapCapacity)
-{
-	m_srvHeaps = other.m_srvHeaps;
-	m_dsvHeaps = other.m_dsvHeaps;
-	m_rtvHeaps = other.m_rtvHeaps;
-	m_uavHeaps = other.m_uavHeaps;
-	m_nsvUAVHeaps = other.m_nsvUAVHeaps;
-
-	memcpy(m_textures, other.m_textures, sizeof(m_textures));
-}
-
-CommittedDescriptorHeap::CommittedDescriptorHeap(CommittedDescriptorHeap&& other)
-	: m_device(other.m_device)
-	, m_srvHeapCapacity(other.m_srvHeapCapacity)
-	, m_rtvHeapCapacity(other.m_dsvHeapCapacity)
-	, m_dsvHeapCapacity(other.m_rtvHeapCapacity)
-	, m_uavHeapCapacity(other.m_uavHeapCapacity)
-	, m_nsvUAVHeapCapacity(other.m_nsvUAVHeapCapacity)
-{
-	m_srvHeaps = std::move(other.m_srvHeaps);
-	m_dsvHeaps = std::move(other.m_dsvHeaps);
-	m_rtvHeaps = std::move(other.m_rtvHeaps);
-	m_uavHeaps = std::move(other.m_uavHeaps);
-	m_nsvUAVHeaps = std::move(other.m_nsvUAVHeaps);
-
-	memcpy(m_textures, other.m_textures, sizeof(m_textures));
-}
-
-CommittedDescriptorHeap& CommittedDescriptorHeap::operator=(const CommittedDescriptorHeap& other)
-{
-	*this = CommittedDescriptorHeap(other);
-	return *this;
-}
-
-CommittedDescriptorHeap& CommittedDescriptorHeap::operator=(CommittedDescriptorHeap&& other)
-{
-	m_srvHeaps = std::move(other.m_srvHeaps);
-	m_dsvHeaps = std::move(other.m_dsvHeaps);
-	m_rtvHeaps = std::move(other.m_rtvHeaps);
-	m_uavHeaps = std::move(other.m_uavHeaps);
-	m_nsvUAVHeaps = std::move(other.m_nsvUAVHeaps);
-
-	//fek all the things
-	m_device = other.m_device;
-	m_srvHeapCapacity = other.m_srvHeapCapacity;
-	m_dsvHeapCapacity = other.m_dsvHeapCapacity;
-	m_rtvHeapCapacity = other.m_rtvHeapCapacity;
-	m_uavHeapCapacity = other.m_uavHeapCapacity;
-	m_nsvUAVHeapCapacity = other.m_nsvUAVHeapCapacity;
-
-	memcpy(m_textures, other.m_textures, sizeof(m_textures));
-
-	return *this;
-}
-
-*/
-
-PUG_RESULT pug::assets::graphics::InitCommittedResourceHeap(
+PUG_RESULT pug::assets::graphics::InitCommittedDescriptorHeap(
 	ID3D12Device* a_device,
 	uint32_t a_srvHeapCapacity,
 	uint32_t a_dsvHeapCapacity,
@@ -591,13 +274,10 @@ PUG_RESULT pug::assets::graphics::InitCommittedResourceHeap(
 	AddUAVHeap();
 	AddnsvUAVHeap();
 
-	PUG_ZERO_MEM(m_textures);
-	//add an empty texture to slot 0, texture handles containing 0 are invalid
-
 	return PUG_RESULT_OK;
 }
 
-PUG_RESULT pug::assets::graphics::DestroyCommittedResourceHeap()
+PUG_RESULT pug::assets::graphics::DestroyCommittedDescriptorHeap()
 {
 	for (uint32_t i = 0; i < m_srvHeaps.size(); ++i)
 	{
@@ -651,13 +331,222 @@ PUG_RESULT pug::assets::graphics::DestroyCommittedResourceHeap()
 	m_uavHeapCapacity = 0;
 	m_nsvUAVHeapCapacity = 0;
 
-	PUG_ZERO_MEM(m_textures);
-
 	m_device = nullptr;
 
 	return PUG_RESULT_OK;
 }
 
+PUG_RESULT pug::assets::graphics::AllocateSRVDescriptors(
+	//D3D12_CPU_DESCRIPTOR_HANDLE& out_cpuDescriptor,
+	//D3D12_GPU_DESCRIPTOR_HANDLE& out_gpuDescriptor,
+	uint32_t& out_heapIndex)
+{
+	PUG_RESULT res = PUG_RESULT_UNKNOW;
+	uint32_t pageIndex = 0;
+	uint32_t descriptorIndex = 0;
+	do
+	{
+		res = m_srvHeaps[pageIndex].AllocateDescriptors(/*out_cpuDescriptor, out_gpuDescriptor,*/ descriptorIndex);
+		if (res == PUG_RESULT_ARRAY_FULL)
+		{//if the heap reported that its page is full we add a new heap and allocate from there
+			++pageIndex;
+			if (pageIndex == m_srvHeaps.size())
+			{
+				AddSRVHeap();
+			}
+		}
+	} while (res != PUG_RESULT_OK);
+
+	out_heapIndex = (pageIndex * m_srvHeaps[pageIndex].GetMaxDescriptorsPerPage()) + descriptorIndex;
+
+	return PUG_RESULT_OK;
+}
+
+PUG_RESULT pug::assets::graphics::AllocateRTVDescriptors(
+	//D3D12_CPU_DESCRIPTOR_HANDLE& out_cpuDescriptor,
+	//D3D12_GPU_DESCRIPTOR_HANDLE& out_gpuDescriptor,
+	uint32_t& out_heapIndex)
+{
+	PUG_RESULT res = PUG_RESULT_UNKNOW;
+	uint32_t pageIndex = 0;
+	uint32_t descriptorIndex = 0;
+	do
+	{
+		res = m_rtvHeaps[pageIndex].AllocateDescriptors(/*out_cpuDescriptor, out_gpuDescriptor,*/ descriptorIndex);
+		if (res == PUG_RESULT_ARRAY_FULL)
+		{//if the heap reported that its page is full we add a new heap and allocate from there
+			++pageIndex;
+			if (pageIndex == m_rtvHeaps.size())
+			{
+				AddRTVHeap();
+			}
+		}
+	} while (res != PUG_RESULT_OK);
+
+	out_heapIndex = pageIndex * m_rtvHeaps[pageIndex].GetMaxDescriptorsPerPage() + descriptorIndex;
+
+	return PUG_RESULT_OK;
+}
+
+PUG_RESULT pug::assets::graphics::AllocateDSVDescriptors(
+	//D3D12_CPU_DESCRIPTOR_HANDLE& out_cpuDescriptor,
+	//D3D12_GPU_DESCRIPTOR_HANDLE& out_gpuDescriptor,
+	uint32_t& out_heapIndex)
+{
+	PUG_RESULT res = PUG_RESULT_UNKNOW;
+	uint32_t pageIndex = 0;
+	uint32_t descriptorIndex = 0;
+	do
+	{
+		res = m_dsvHeaps[pageIndex].AllocateDescriptors(/*out_cpuDescriptor, out_gpuDescriptor,*/ descriptorIndex);
+		if (res == PUG_RESULT_ARRAY_FULL)
+		{//if the heap reported that its page is full we add a new heap and allocate from there
+			++pageIndex;
+			if (pageIndex == m_dsvHeaps.size())
+			{
+				AddDSVHeap();
+			}
+		}
+	} while (res != PUG_RESULT_OK);
+
+	out_heapIndex = pageIndex * m_dsvHeaps[pageIndex].GetMaxDescriptorsPerPage() + descriptorIndex;
+
+	return PUG_RESULT_OK;
+}
+
+PUG_RESULT pug::assets::graphics::AllocateUAVDescriptors(
+	//D3D12_CPU_DESCRIPTOR_HANDLE& out_cpuDescriptor,
+	//D3D12_GPU_DESCRIPTOR_HANDLE& out_gpuDescriptor,
+	uint32_t& out_heapIndex)
+{
+	PUG_RESULT res = PUG_RESULT_UNKNOW;
+	uint32_t pageIndex = 0;
+	uint32_t descriptorIndex = 0;
+	do
+	{
+		res = m_uavHeaps[pageIndex].AllocateDescriptors(/*out_cpuDescriptor, out_gpuDescriptor,*/ descriptorIndex);
+		if (res == PUG_RESULT_ARRAY_FULL)
+		{//if the heap reported that its page is full we add a new heap and allocate from there
+			++pageIndex;
+			if (pageIndex == m_uavHeaps.size())
+			{
+				AddUAVHeap();
+			}
+		}
+	} while (res != PUG_RESULT_OK);
+
+	out_heapIndex = pageIndex * m_uavHeaps[pageIndex].GetMaxDescriptorsPerPage() + descriptorIndex;
+
+	return PUG_RESULT_OK;
+}
+
+PUG_RESULT pug::assets::graphics::AllocateNSVUAVDescriptors(
+	//D3D12_CPU_DESCRIPTOR_HANDLE& out_cpuDescriptor,
+	//D3D12_GPU_DESCRIPTOR_HANDLE& out_gpuDescriptor,
+	uint32_t& out_heapIndex)
+{
+	PUG_RESULT res = PUG_RESULT_UNKNOW;
+	uint32_t pageIndex = 0;
+	uint32_t descriptorIndex = 0;
+	do
+	{
+		res = m_nsvUAVHeaps[pageIndex].AllocateDescriptors(/*out_cpuDescriptor, out_gpuDescriptor,*/ descriptorIndex);
+		if (res == PUG_RESULT_ARRAY_FULL)
+		{//if the heap reported that its page is full we add a new heap and allocate from there
+			++pageIndex;
+			if (pageIndex == m_nsvUAVHeaps.size())
+			{
+				AddnsvUAVHeap();
+			}
+		}
+	} while (res != PUG_RESULT_OK);
+
+	out_heapIndex = pageIndex * m_nsvUAVHeaps[pageIndex].GetMaxDescriptorsPerPage() + descriptorIndex;
+
+	return PUG_RESULT_OK;
+}
+
+PUG_RESULT pug::assets::graphics::ReleaseSRVDescriptors(
+	const uint32_t& inout_heapIndex)
+{
+	uint32_t pageSize = m_srvHeaps[0].GetMaxDescriptorsPerPage();
+
+	if (inout_heapIndex != PUG_INVALID_ID)
+	{
+		uint32_t pageIndex = inout_heapIndex / pageSize;
+		uint32_t descriptorIndex = inout_heapIndex % pageSize;
+
+		m_srvHeaps[pageIndex].ReleaseDescriptors(descriptorIndex);
+	}
+
+	return PUG_RESULT_OK;
+}
+
+PUG_RESULT pug::assets::graphics::ReleaseRTVDescriptors(
+	const uint32_t& inout_heapIndex)
+{
+	uint32_t pageSize = m_rtvHeaps[0].GetMaxDescriptorsPerPage();
+
+	if (inout_heapIndex != PUG_INVALID_ID)
+	{
+		uint32_t pageIndex = inout_heapIndex / pageSize;
+		uint32_t descriptorIndex = inout_heapIndex % pageSize;
+
+		m_rtvHeaps[pageIndex].ReleaseDescriptors(descriptorIndex);
+	}
+
+	return PUG_RESULT_OK;
+}
+
+PUG_RESULT pug::assets::graphics::ReleaseDSVDescriptors(
+	const uint32_t& inout_heapIndex)
+{
+	uint32_t pageSize = m_dsvHeaps[0].GetMaxDescriptorsPerPage();
+
+	if (inout_heapIndex != PUG_INVALID_ID)
+	{
+		uint32_t pageIndex = inout_heapIndex / pageSize;
+		uint32_t descriptorIndex = inout_heapIndex % pageSize;
+
+		m_dsvHeaps[pageIndex].ReleaseDescriptors(descriptorIndex);
+	}
+
+	return PUG_RESULT_OK;
+}
+
+PUG_RESULT pug::assets::graphics::ReleaseUAVDescriptors(
+	const uint32_t& inout_heapIndex)
+{
+	uint32_t pageSize = m_uavHeaps[0].GetMaxDescriptorsPerPage();
+
+	if (inout_heapIndex != PUG_INVALID_ID)
+	{
+		uint32_t pageIndex = inout_heapIndex / pageSize;
+		uint32_t descriptorIndex = inout_heapIndex % pageSize;
+
+		m_uavHeaps[pageIndex].ReleaseDescriptors(descriptorIndex);
+	}
+
+	return PUG_RESULT_OK;
+}
+
+PUG_RESULT pug::assets::graphics::ReleaseNSVUAVDescriptors(
+	const uint32_t& inout_heapIndex)
+{
+	uint32_t pageSize = m_nsvUAVHeaps[0].GetMaxDescriptorsPerPage();
+
+	if (inout_heapIndex != PUG_INVALID_ID)
+	{
+		uint32_t pageIndex = inout_heapIndex / pageSize;
+		uint32_t descriptorIndex = inout_heapIndex % pageSize;
+
+		m_nsvUAVHeaps[pageIndex].ReleaseDescriptors(descriptorIndex);
+	}
+
+	return PUG_RESULT_OK;
+}
+
+/*
 PUG_RESULT pug::assets::graphics::AllocateTexture2D(
 	ID3D12Resource* a_resource,
 	const DXGI_FORMAT a_format,
@@ -770,4 +659,4 @@ PUG_RESULT pug::assets::graphics::ReleaseTexture2D(
 
 	return PUG_RESULT_OK;
 }
-
+*/

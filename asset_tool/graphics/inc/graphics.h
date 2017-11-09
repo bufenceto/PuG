@@ -16,6 +16,8 @@ namespace graphics{
 	PUG_RESULT DestroyGraphics();
 
 	PUG_RESULT Render();
+
+	PUG_RESULT CreateTexture2D();
 }
 }
 }

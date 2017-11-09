@@ -16,6 +16,10 @@ using namespace pug::log;
 using namespace pug::platform;
 using namespace pug::windows;
 
+#define MAX_TEXTURES 512
+
+static DX12Texture2D g_textures[MAX_TEXTURES];
+
 static ID3D12Debug* g_debugInterface;
 static ID3D12Device* g_device;
 static ID3D12DebugDevice* g_debugDevice;
@@ -94,7 +98,6 @@ PUG_RESULT pug::assets::graphics::InitGraphics(
 		return PUG_RESULT_GRAPHICS_ERROR;
 	}
 
-
 	if (!CreateSwapchain(
 		dxgiFactory,
 		adapter,
@@ -111,7 +114,7 @@ PUG_RESULT pug::assets::graphics::InitGraphics(
 		return PUG_RESULT_GRAPHICS_ERROR;
 	}
 
-	PUG_TRY(InitCommittedResourceHeap(
+	PUG_TRY(InitCommittedDescriptorHeap(
 		g_device, 
 		128, 
 		8, 
@@ -120,25 +123,13 @@ PUG_RESULT pug::assets::graphics::InitGraphics(
 		128));
 	
 	TextureHandle testHandle = {0};
-
-	PUG_TRY(AllocateTexture2D(
-		nullptr,
-		DXGI_FORMAT_R8G8B8A8_UNORM,
-		vmath::Vector4(0),
-		D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET,
-		1280,
-		720,
-		D3D12_RESOURCE_STATE_COMMON,
-		testHandle));
-
-	//PUG_TRY(ReleaseTexture2D(testHandle));
 		
 	return PUG_RESULT_OK;
 }
 
 PUG_RESULT pug::assets::graphics::DestroyGraphics()
 {
-	DestroyCommittedResourceHeap();
+	DestroyCommittedDescriptorHeap();
 
 	SafeRelease(g_device);
 	SafeRelease(g_debugDevice);
@@ -147,3 +138,16 @@ PUG_RESULT pug::assets::graphics::DestroyGraphics()
 	return PUG_RESULT_OK;
 }
 
+PUG_RESULT Render()
+{
+
+}
+
+PUG_RESULT CreateTexture2D()
+{
+	//sort the data in subresource,
+	//create ID3D12Resource
+	//allocate descriptors
+	//allocate texture in slot
+	//return texture handle
+}

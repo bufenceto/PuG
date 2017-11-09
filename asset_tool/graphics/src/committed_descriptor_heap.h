@@ -9,7 +9,7 @@
 #include <vector>
 #include <d3d12.h>
 
-#define MAX_TEXTURES 1024
+
 
 namespace pug {
 namespace assets{
@@ -18,7 +18,7 @@ namespace graphics {
 	class DescriptorPage;
 	class DX12Texture2D;
 
-	PUG_RESULT InitCommittedResourceHeap(
+	PUG_RESULT InitCommittedDescriptorHeap(
 		ID3D12Device* a_device,
 		uint32_t a_srvHeapCapacity,
 		uint32_t a_dsvHeapCapacity,
@@ -26,8 +26,31 @@ namespace graphics {
 		uint32_t a_uavHeapCapacity,
 		uint32_t a_nsvUAVHeapCapacity);
 
-	PUG_RESULT DestroyCommittedResourceHeap();
+	PUG_RESULT DestroyCommittedDescriptorHeap();
 
+	PUG_RESULT AllocateSRVDescriptors(
+		uint32_t& out_heapIndex);
+	PUG_RESULT AllocateRTVDescriptors(
+		uint32_t& out_heapIndex);
+	PUG_RESULT AllocateDSVDescriptors(
+		uint32_t& out_heapIndex);
+	PUG_RESULT AllocateUAVDescriptors(
+		uint32_t& out_heapIndex);
+	PUG_RESULT AllocateNSVUAVDescriptors(
+		uint32_t& out_heapIndex);
+
+	PUG_RESULT ReleaseSRVDescriptors(
+		const uint32_t& inout_heapIndex);
+	PUG_RESULT ReleaseRTVDescriptors(
+		const uint32_t& inout_heapIndex);
+	PUG_RESULT ReleaseDSVDescriptors(
+		const uint32_t& inout_heapIndex);
+	PUG_RESULT ReleaseUAVDescriptors(
+		const uint32_t& inout_heapIndex);
+	PUG_RESULT ReleaseNSVUAVDescriptors(
+		const uint32_t& inout_heapIndex);
+
+	/*
 	PUG_RESULT AllocateTexture2D(
 		ID3D12Resource* resource,
 		const DXGI_FORMAT format,
@@ -40,7 +63,7 @@ namespace graphics {
 
 	PUG_RESULT ReleaseTexture2D(
 		TextureHandle& inout_textureHandle);
-
+	*/
 }
 }
 }

@@ -368,3 +368,34 @@ static bool CreateSwapchain(
 
 	return true;
 }
+
+
+//static bool MapSwapchainBackbuffers(
+//	ID3D12Device* a_device,
+//	IDXGISwapChain3* a_swapChain,
+//	const uint32_t a_backBufferCount,
+//	DX12Texture2D&* out_textures)
+//{
+//	HRESULT result;
+//
+//	for (uint32_t i = 0; i < a_backBufferCount; ++i)
+//	{
+//		D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle = {};
+//		//D3D12_CPU_DESCRIPTOR_HANDLE renderTargetViewHandle = {};
+//		AllocateCPUDescriptor(g_rtvHeap, cpuHandle);
+//		ID3D12Resource* backBuffer = nullptr;
+//		result = a_swapChain->GetBuffer(i, IID_PPV_ARGS(&backBuffer));//write the pointer of our back buffer to our textures
+//		if (FAILED(result))
+//		{
+//			Error("Failed to get pointer to back buffer in swap chain with index: %d!", i);
+//			return false;
+//		}
+//		g_device->CreateRenderTargetView(backBuffer, NULL, cpuHandle);
+//
+//		g_backBuffers[i].isInitialized = true;
+//		g_backBuffers[i].resource = backBuffer;
+//		g_backBuffers[i].cpuRTV = cpuHandle;
+//	}
+//
+//	return true;
+//}
