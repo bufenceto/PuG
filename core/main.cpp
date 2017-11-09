@@ -14,14 +14,25 @@ int main()
 	Window* window = Window::Create("MY_WINDOW_NAME", vmath::Int2(800, 640));
 	if (!window)
 	{
-		log::Error("Error initializing window.\n");
+		log::Error("Error initializing window.");
 		log::EndLog();
 
 		return 0;
 	}
 
 	DX12Renderer* renderer = new DX12Renderer();
-	renderer->Initialize(window);
+	if (!PUG_SUCCEEDED(renderer->Initialize(window)))
+	{
+		log::Error("Error initializing the renderer.");
+		log::EndLog();
+
+		renderer->Destroy();
+		window->Destroy();
+
+		return 0;
+	}
+
+	// Main loop
 	while (true)
 	{
 		window->DispatchMessages();

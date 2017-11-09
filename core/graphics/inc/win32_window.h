@@ -20,7 +20,7 @@ namespace graphics {
 			return m_hwnd;
 		}
 
-		RESULT Initialize(const std::string& a_title, const vmath::Int2& a_size);
+		PUG_RESULT Initialize(const std::string& a_title, const vmath::Int2& a_size);
 
 	private:
 		HWND m_hwnd;

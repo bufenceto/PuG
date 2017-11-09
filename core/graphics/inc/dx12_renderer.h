@@ -15,8 +15,8 @@ namespace graphics {
 
 		const static uint32_t BufferCount = 2;
 
-		virtual RESULT Initialize(Window* a_window)	override;
-		virtual RESULT Resize(Window* a_window)		override;
+		virtual PUG_RESULT Initialize(Window* a_window)	override;
+		virtual PUG_RESULT Resize(Window* a_window)		override;
 		virtual void Draw()							override;
 		virtual void Destroy()						override;
 
@@ -25,8 +25,8 @@ namespace graphics {
 		void PopulateCommandList();
 		void TransitionToNextFrame();
 
-		RESULT LoadPipeline(Window* a_window);
-		RESULT LoadAssets();
+		PUG_RESULT LoadPipeline(Window* a_window);
+		PUG_RESULT LoadAssets();
 
 		DX12Device* m_device;
 		IDXGISwapChain3* m_swapChain;

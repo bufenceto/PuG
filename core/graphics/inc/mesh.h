@@ -64,6 +64,9 @@ namespace graphics
 
 		uint32_t vertexCount;
 		uint32_t indexCount;
+
+		uint32_t startVertex;
+		uint32_t startIndex;
 	};
 }
 }

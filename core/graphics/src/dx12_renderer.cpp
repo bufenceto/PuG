@@ -69,22 +69,22 @@ namespace graphics {
 		}
 	}
 
-	RESULT DX12Renderer::Initialize(Window* a_window)
+	PUG_RESULT DX12Renderer::Initialize(Window* a_window)
 	{
 		vmath::Int2 size = a_window->GetSize();
 		m_viewport = CD3DX12_VIEWPORT(0.0f, 0.0f, size.x, size.y, 0.0f, 1.0f);
 		m_scissorRect = CD3DX12_RECT(0, 0, static_cast<LONG>(size.x), static_cast<LONG>(size.y));
 		m_aspectRatio = (float)size.x / (float)size.y;
 
-		if (!LoadPipeline(a_window))
-			return RESULT_FAILED;
-		if (!LoadAssets())
-			return RESULT_FAILED;
+		if (!PUG_SUCCEEDED(LoadPipeline(a_window)))
+			return PUG_RESULT_GRAPHICS_ERROR;
+		if (!PUG_SUCCEEDED(LoadAssets()))
+			return PUG_RESULT_GRAPHICS_ERROR;
 
-		return RESULT_OK;
+		return PUG_RESULT_OK;
 	}
 
-	RESULT DX12Renderer::LoadPipeline(Window* a_window)
+	PUG_RESULT DX12Renderer::LoadPipeline(Window* a_window)
 	{
 		// Enable debug layer
 #if defined (_DEBUG)
@@ -103,7 +103,7 @@ namespace graphics {
 		if (FAILED(CreateDXGIFactory1(IID_PPV_ARGS(&factory))))
 		{
 			log::Error("Unable to create DXGI factory.\n");
-			return RESULT_FAILED;
+			return PUG_RESULT_GRAPHICS_ERROR;
 		}
 
 		// Query adapters
@@ -160,7 +160,7 @@ namespace graphics {
 		if (!tDevice)
 		{
 			log::Error("Failed to create D3D12 device.");
-			return RESULT_FAILED;
+			return PUG_RESULT_GRAPHICS_ERROR;
 		}
 
 		m_device = new DX12Device(tDevice);
@@ -170,9 +170,9 @@ namespace graphics {
 
 		// Create a graphics (direct) command queue
 
-		if (!m_device->CreateCommandQueue(m_directCommandQueue))
+		if (!PUG_SUCCEEDED(m_device->CreateCommandQueue(m_directCommandQueue)))
 		{
-			return RESULT_FAILED;
+			return PUG_RESULT_GRAPHICS_ERROR;
 		}
 
 		// Create swap chain
@@ -200,14 +200,14 @@ namespace graphics {
 			)))
 			{
 				log::Error("Error creating swap chain.");
-				return RESULT_FAILED;
+				return PUG_RESULT_GRAPHICS_ERROR;
 			}
 		}
 
 		// Create RTV descriptor heap
-		if (!m_device->CreateDescriptorHeap(m_rtvDescriptorHeap, D3D12_DESCRIPTOR_HEAP_TYPE_RTV, BufferCount))
+		if (!PUG_SUCCEEDED(m_device->CreateDescriptorHeap(m_rtvDescriptorHeap, D3D12_DESCRIPTOR_HEAP_TYPE_RTV, BufferCount)))
 		{
-			return RESULT_FAILED;
+			return PUG_RESULT_GRAPHICS_ERROR;
 		}
 
 		m_rtvDescriptorSize = m_device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
@@ -221,14 +221,14 @@ namespace graphics {
 			if (FAILED(m_swapChain->GetBuffer(i, IID_PPV_ARGS(&m_OMTargets[i]))))
 			{
 				log::Error("Error getting swap chain buffer[%d].", i);
-				return RESULT_FAILED;
+				return PUG_RESULT_GRAPHICS_ERROR;
 			}
 			m_device->CreateRenderTargetView(m_OMTargets[i], {}, rtvHandle);
 			rtvHandle.Offset(1, m_rtvDescriptorSize);
 
-			if (!m_device->CreateCommandAllocator(m_directCommandAllocators[i]))
+			if (!PUG_SUCCEEDED(m_device->CreateCommandAllocator(m_directCommandAllocators[i])))
 			{
-				return RESULT_FAILED;
+				return PUG_RESULT_GRAPHICS_ERROR;
 			}
 		}
 
@@ -237,9 +237,9 @@ namespace graphics {
 		CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC desc;
 		desc.Init_1_1(0, nullptr, 0, nullptr, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
 
-		if(!m_device->CreateVersionedRootSignature(m_rootSignature, desc, D3D_ROOT_SIGNATURE_VERSION_1_0))
+		if(!PUG_SUCCEEDED(m_device->CreateVersionedRootSignature(m_rootSignature, desc, D3D_ROOT_SIGNATURE_VERSION_1_0)))
 		{
-			return RESULT_FAILED;
+			return PUG_RESULT_GRAPHICS_ERROR;
 		}
 
 		// Create pipeline state object
@@ -293,9 +293,9 @@ namespace graphics {
 			desc.PS = CD3DX12_SHADER_BYTECODE(pixelShader);
 			desc.InputLayout = inputLayoutDesc;
 			
-			if (!m_device->CreateGraphicsPipelineState(m_PSO, desc))
+			if (!PUG_SUCCEEDED(m_device->CreateGraphicsPipelineState(m_PSO, desc)))
 			{
-				return RESULT_FAILED;
+				return PUG_RESULT_GRAPHICS_ERROR;
 			}
 
 			if (error)
@@ -307,39 +307,39 @@ namespace graphics {
 
 		// Create command list
 
-		if (!m_device->CreateGraphicsCommandList(
+		if (!PUG_SUCCEEDED(m_device->CreateGraphicsCommandList(
 			m_directCommandList,
 			m_directCommandAllocators[m_swapChain->GetCurrentBackBufferIndex()],
 			D3D12_COMMAND_LIST_TYPE_DIRECT,
 			m_PSO
-		))
+		)))
 		{
-			return RESULT_FAILED;
+			return PUG_RESULT_GRAPHICS_ERROR;
 		}
 
 		m_directCommandList->Close();
 
 		// Create synchroniztion objects
 		{
-			if (!m_device->CreateFence(m_fence))
+			if (!PUG_SUCCEEDED(m_device->CreateFence(m_fence)))
 			{
-				return RESULT_FAILED;
+				return PUG_RESULT_GRAPHICS_ERROR;
 			}
 
 			m_fenceEvent = CreateEvent(nullptr, false, false, nullptr);
 			if (!m_fenceEvent)
 			{
 				log::Error("Failed to create a fence event.");
-				return RESULT_FAILED;
+				return PUG_RESULT_GRAPHICS_ERROR;
 			}
 		}
 
 		factory->Release();
-		return RESULT_OK;
+		return PUG_RESULT_OK;
 	}
 
 
-	RESULT DX12Renderer::LoadAssets()
+	PUG_RESULT DX12Renderer::LoadAssets()
 	{
 		Vertex triangleVertices[] =
 		{
@@ -354,18 +354,18 @@ namespace graphics {
 			0, 1, 3, 3, 1, 2
 		};
 
-		if (!m_device->CreateVertexAndIndexBuffer(m_vertexBuffer, m_indexBuffer, m_vbView, m_ibView, triangleVertices, _countof(triangleVertices), indices, _countof(indices)))
+		if (!PUG_SUCCEEDED(m_device->CreateVertexAndIndexBuffer(m_vertexBuffer, m_indexBuffer, m_vbView, m_ibView, triangleVertices, _countof(triangleVertices), indices, _countof(indices))))
 		{
-			return RESULT_FAILED;
+			return PUG_RESULT_GRAPHICS_ERROR;
 		}
 
-		return RESULT_OK;
+		return PUG_RESULT_OK;
 	}
 
-	RESULT DX12Renderer::Resize(Window* window)
+	PUG_RESULT DX12Renderer::Resize(Window* window)
 	{
 
-		return RESULT_OK;
+		return PUG_RESULT_OK;
 	}
 
 	void DX12Renderer::Draw()

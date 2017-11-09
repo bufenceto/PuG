@@ -13,7 +13,7 @@ namespace graphics {
 		return window;
 	}
 
-	RESULT Win32Window::Initialize(const std::string& a_title, const vmath::Int2& a_size)
+	PUG_RESULT Win32Window::Initialize(const std::string& a_title, const vmath::Int2& a_size)
 	{
 		m_size = a_size;
 
@@ -39,7 +39,7 @@ namespace graphics {
 		if (!RegisterClass(&wc))
 		{
 			// Failed to register window class
-			return RESULT_FAILED;
+			return PUG_RESULT_PLATFORM_ERROR;
 		}
 
 		// Calculate full window size (including borders)
@@ -63,12 +63,12 @@ namespace graphics {
 
 		if (m_hwnd == NULL)
 		{
-			return RESULT_FAILED;
+			return PUG_RESULT_PLATFORM_ERROR;
 		}
 
 		ShowWindow(m_hwnd, 1);
 
-		return RESULT_OK;
+		return PUG_RESULT_OK;
 	}
 
 	void Win32Window::Destroy()
