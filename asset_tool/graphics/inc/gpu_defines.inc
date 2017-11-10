@@ -1,0 +1,5 @@
+#define MAX_POINT_LIGHTS 128
+#define MAX_DIRECTIONAL_LIGHTS 8
+
+#define MAX_DRAW_CALLS 256
+#define DRAW_CALLS_PER_THREAD 32 //for indirect execute

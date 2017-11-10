@@ -1,30 +1,35 @@
 #pragma once
 #include <cstdint>
 
-#define DeclareHandle(name)									\
-class name													\
+#define DeclareHandle(CLASS)								\
+class CLASS													\
 {															\
 public:														\
-	name(uint32_t a_index)									\
-		: m_index(a_index){}								\
-	~name(){}												\
+	CLASS()													\
+		: m_index(0)										\
+	{														\
 															\
-	name(const name& other)									\
+	}														\
+	CLASS(uint32_t a_index)									\
+		: m_index(a_index){}								\
+	~CLASS(){}												\
+															\
+	CLASS(const CLASS& other)								\
 	{														\
 		m_index = other.m_index;							\
 	}														\
-	name(name&& other)										\
+	CLASS(CLASS&& other)									\
 	{														\
 		m_index = other.m_index;							\
 		other.m_index = 0;									\
 	}														\
 															\
-	name& operator=(const name& other)						\
+	CLASS& operator=(const CLASS& other)					\
 	{														\
 		m_index = other.m_index;							\
 		return *this;										\
 	}														\
-	name& operator=(name&& other)							\
+	CLASS& operator=(CLASS&& other)							\
 	{														\
 		m_index = other.m_index;							\
 		other.m_index = 0;									\
@@ -40,5 +45,6 @@ private:													\
 	uint32_t m_index;										\
 }; 
 
-DeclareHandle(TextureHandle)
-DeclareHandle(MeshHandle)
+DeclareHandle(TextureHandle);
+DeclareHandle(VertexBufferHandle);
+DeclareHandle(IndexBufferHandle);

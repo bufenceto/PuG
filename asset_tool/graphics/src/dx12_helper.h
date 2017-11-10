@@ -1,5 +1,4 @@
 #pragma once
-
 #include <d3d12.h>
 #include <dxgi1_6.h>
 #include <cstdint>
@@ -9,8 +8,49 @@
 
 #include "../logger/logger.h"
 #include "core/inc/macro.h"
+#include "formats.h"
+
+#include "vmath.h"
 
 using namespace pug;
+using namespace pug::assets;
+using namespace pug::assets::graphics;
+
+#define SET_NAME(a) a.SetName(L#a)
+
+static const size_t FormatToSize(const DXGI_FORMAT format)
+{
+	switch (format)
+	{
+	case(DXGI_FORMAT_R16_UINT): return 2;
+	case(DXGI_FORMAT_R32_UINT): return 4;
+	default: return 0;
+	}
+}
+
+static DXGI_FORMAT ConvertFormat(PUG_FORMAT format)
+{
+	switch (format)
+	{
+	case PUG_FORMAT_R16_UINT: return DXGI_FORMAT_R16_UINT;
+	case PUG_FORMAT_R32_UINT: return DXGI_FORMAT_R32_UINT;
+
+	case PUG_FORMAT_RGBA8_UINT: return DXGI_FORMAT_R8G8B8A8_UINT;
+	case PUG_FORMAT_RGBA16_UINT: return DXGI_FORMAT_R16G16B16A16_UINT;
+
+	case PUG_FORMAT_D24S8: return DXGI_FORMAT_D24_UNORM_S8_UINT;
+
+	case PUG_FORMAT_RGB10A2: return DXGI_FORMAT_R10G10B10A2_TYPELESS;
+	case PUG_FORMAT_RG11B10F: return DXGI_FORMAT_R11G11B10_FLOAT;
+	case PUG_FORMAT_RGBA16F: return DXGI_FORMAT_R16G16B16A16_FLOAT;
+	case PUG_FORMAT_RGBA32F: return DXGI_FORMAT_R32G32B32A32_FLOAT;
+	case PUG_FORMAT_R16F: return DXGI_FORMAT_R16_FLOAT;
+	case PUG_FORMAT_R32F: return DXGI_FORMAT_R32_FLOAT;
+	case PUG_FORMAT_BC3_UNORM: return DXGI_FORMAT_BC3_UNORM;
+	default:
+		return DXGI_FORMAT_UNKNOWN;
+	}
+}
 
 // Safely release a COM object.
 template<typename T>
@@ -368,34 +408,3 @@ static bool CreateSwapchain(
 
 	return true;
 }
-
-
-//static bool MapSwapchainBackbuffers(
-//	ID3D12Device* a_device,
-//	IDXGISwapChain3* a_swapChain,
-//	const uint32_t a_backBufferCount,
-//	DX12Texture2D&* out_textures)
-//{
-//	HRESULT result;
-//
-//	for (uint32_t i = 0; i < a_backBufferCount; ++i)
-//	{
-//		D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle = {};
-//		//D3D12_CPU_DESCRIPTOR_HANDLE renderTargetViewHandle = {};
-//		AllocateCPUDescriptor(g_rtvHeap, cpuHandle);
-//		ID3D12Resource* backBuffer = nullptr;
-//		result = a_swapChain->GetBuffer(i, IID_PPV_ARGS(&backBuffer));//write the pointer of our back buffer to our textures
-//		if (FAILED(result))
-//		{
-//			Error("Failed to get pointer to back buffer in swap chain with index: %d!", i);
-//			return false;
-//		}
-//		g_device->CreateRenderTargetView(backBuffer, NULL, cpuHandle);
-//
-//		g_backBuffers[i].isInitialized = true;
-//		g_backBuffers[i].resource = backBuffer;
-//		g_backBuffers[i].cpuRTV = cpuHandle;
-//	}
-//
-//	return true;
-//}

@@ -39,7 +39,9 @@ void pug::assets::RunAssetProcessor()
 {
 	while (1)
 	{
-		deltaTime = g_timer.GetFrameDelta();
+		
+
+		deltaTime = (float)g_timer.GetFrameDelta();
 		g_window->Update();
 
 		PUG_TRY(graphics::Render());

@@ -81,11 +81,11 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)core/inc;$(ProjectDir)graphics/inc;$(ProjectDir)windows/inc;$(ProjectDir)input/inc;$(ProjectDir)time/inc;$(ProjectDir)../logger/;$(ProjectDir)../external/inc/vmath/;$(ProjectDir)../external/inc/directx12/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)core/inc;$(ProjectDir)graphics/inc;$(ProjectDir)windows/inc;$(ProjectDir)input/inc;$(ProjectDir)time/inc;$(ProjectDir)../logger/;$(ProjectDir)../utility/;$(ProjectDir)../external/inc/vmath/;$(ProjectDir)../external/inc/directx12/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>$(ProjectDir)../logger/$(Platform)/$(Configuration)/;$(ProjectDir)../utility/$(Platform)/$(Configuration)/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>logger.lib;utility.lib;dxgi.lib;d3d12.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>logger.lib;utility.lib;dxgi.lib;d3d12.lib;d3dcompiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -108,20 +108,23 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)core/inc;$(ProjectDir)graphics/inc;$(ProjectDir)windows/inc;$(ProjectDir)input/inc;$(ProjectDir)time/inc;$(ProjectDir)../logger/;$(ProjectDir)../external/inc/vmath/;$(ProjectDir)../external/inc/directx12/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)core/inc;$(ProjectDir)graphics/inc;$(ProjectDir)windows/inc;$(ProjectDir)input/inc;$(ProjectDir)time/inc;$(ProjectDir)../logger/;$(ProjectDir)../utility/;$(ProjectDir)../external/inc/vmath/;$(ProjectDir)../external/inc/directx12/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>$(ProjectDir)../logger/$(Platform)/$(Configuration)/;$(ProjectDir)../utility/$(Platform)/$(Configuration)/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>logger.lib;utility.lib;dxgi.lib;d3d12.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>logger.lib;utility.lib;dxgi.lib;d3d12.lib;d3dcompiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="core\src\asset_processor.cpp" />
-    <ClCompile Include="graphics\src\committed_descriptor_heap.cpp" />
-    <ClCompile Include="graphics\src\dx12_resource.cpp" />
-    <ClCompile Include="graphics\src\dx12_texture2D.cpp" />
+    <ClCompile Include="graphics\src\persistent_descriptor_heap.cpp" />
+    <ClCompile Include="graphics\src\resource\dx12_index_buffer.cpp" />
+    <ClCompile Include="graphics\src\resource\dx12_vertex_buffer.cpp" />
+    <ClCompile Include="graphics\src\resource\dx12_resource.cpp" />
+    <ClCompile Include="graphics\src\resource\dx12_texture2D.cpp" />
+    <ClCompile Include="graphics\src\dx12_shader_librarian.cpp" />
     <ClCompile Include="input\src\input_monitor.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="graphics\src\dx12_graphics.cpp" />
@@ -132,16 +135,21 @@
     <ClInclude Include="core\inc\asset_processor.h" />
     <ClInclude Include="core\inc\macro.h" />
     <ClInclude Include="core\inc\result_codes.h" />
-    <ClInclude Include="graphics\inc\defines.h" />
-    <ClInclude Include="graphics\src\committed_descriptor_heap.h" />
+    <ClInclude Include="core\inc\defines.h" />
+    <ClInclude Include="core\inc\typedef.h" />
+    <ClInclude Include="graphics\inc\formats.h" />
+    <ClInclude Include="graphics\src\persistent_descriptor_heap.h" />
     <ClInclude Include="graphics\src\dx12_resource_creation.h" />
-    <ClInclude Include="graphics\src\dx12_texture2D.h" />
+    <ClInclude Include="graphics\src\resource\dx12_index_buffer.h" />
+    <ClInclude Include="graphics\src\resource\dx12_vertex_buffer.h" />
+    <ClInclude Include="graphics\src\resource\dx12_texture2D.h" />
     <ClInclude Include="graphics\inc\graphics.h" />
     <ClInclude Include="graphics\src\dx12_helper.h" />
     <ClInclude Include="graphics\inc\window.h" />
-    <ClInclude Include="graphics\src\dx12_resource.h" />
+    <ClInclude Include="graphics\src\resource\dx12_resource.h" />
     <ClInclude Include="core\inc\pug_funcs.h" />
-    <ClInclude Include="graphics\src\texture_handle.h" />
+    <ClInclude Include="core\inc\handles.h" />
+    <ClInclude Include="graphics\src\dx12_shader_librarian.h" />
     <ClInclude Include="input\inc\input.h" />
     <ClInclude Include="input\inc\input_message.h" />
     <ClInclude Include="input\inc\input_monitor.h" />

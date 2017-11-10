@@ -11,33 +11,16 @@ namespace graphics {
 	{
 	public:
 		DX12Texture2D()
-			//: m_cpuSRV({})
-			//, m_gpuSRV({})
-			: m_srvHeapIndex(0)
-
-			//, m_cpuDSV({})
-			//, m_gpuDSV({})
+			: DX12Resource()
+			, m_srvHeapIndex(0)
 			, m_dsvHeapIndex(0)
-
-			//, m_cpuRTV({})
-			//, m_gpuRTV({})
 			, m_rtvHeapIndex(0)
-
-			//, m_cpuUAV({})
-			//, m_gpuUAV({})
 			, m_uavHeapIndex(0)
-
-			//, m_nonShaderVisible_cpuUAV({})
-			//, m_nonShaderVisible_gpuUAV({})
 			, m_nsvUAVHeapIndex(0)
-
 			, m_width(0)
 			, m_height(0)
 			, m_format(DXGI_FORMAT_UNKNOWN)
-		{
-			m_initialized = 0;
-			m_resource = nullptr;
-		}
+		{}
 
 		DX12Texture2D(
 			ID3D12Resource* a_resource,

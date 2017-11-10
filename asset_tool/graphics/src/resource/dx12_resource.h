@@ -10,9 +10,20 @@ namespace graphics {
 	class DX12Resource
 	{
 	public:
+		DX12Resource()
+		{
+			m_initialized = 0;
+			m_currentState = D3D12_RESOURCE_STATE_COMMON;
+			m_resource = nullptr;
+		}
 		virtual ~DX12Resource() = 0 {}
 
 		D3D12_RESOURCE_BARRIER Transition(D3D12_RESOURCE_STATES a_newState);
+		void SetName(const wchar_t* name)
+		{
+			m_resource->SetName(name);
+		}
+		
 		uint32_t IsInitialized() const
 		{
 			return m_initialized;

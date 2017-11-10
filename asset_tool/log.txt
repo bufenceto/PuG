@@ -1,6 +1,10 @@
- -- 9/11/2017 - 15:26:47 BEGINNING LOG -- Debug Break Level set toError
-[INFO]: Adapter: NVIDIA GeForce GTX 1060
-[INFO]: Dedicated video memory(mb): 3019
+ -- 10/11/2017 - 16:8:30 BEGINNING LOG -- Debug Break Level set toError
+[INFO]: Adapter: Capture Adapter
+[INFO]: Dedicated video memory(mb): 2996
 [INFO]: Dedicated system memory(mb): 0
 [INFO]: Picking feature level D3D_FEATURE_LEVEL_12_1
 [MESSAGE]: Succesfully created device for chosen feature level
+[INFO]: Loading shaders from D:\Git\PuG\asset_tool\graphics\rsc
+[INFO]: Loaded shader from path: D:\Git\PuG\asset_tool\graphics\rsc\forward_pixel_shader.ps.hlsl
+[INFO]: Loaded shader from path: D:\Git\PuG\asset_tool\graphics\rsc\forward_vertex_shader.vs.hlsl
+[ERROR]: Failed to present swapchain!
