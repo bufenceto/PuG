@@ -21,7 +21,7 @@ namespace pug {
 
 			PUG_RESULT Update() override;
 
-			PUG_RESULT Init(const vmath::Int2& a_size, const std::string& a_title);
+			PUG_RESULT Init(const vmath::Int2& a_size, const std::string& a_title, const uint32_t& a_fullScreen);
 
 			const std::string GetTitle() const { return m_title; }
 			const HWND GetWindowHandle() const { return m_windowHandle; }

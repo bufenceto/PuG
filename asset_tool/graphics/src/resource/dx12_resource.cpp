@@ -1,7 +1,7 @@
 #include "macro.h"
 #include "dx12_resource.h"
 
-#include "d3dx12.h"
+#include "directx12/d3dx12.h"
 
 using namespace pug;
 using namespace pug::assets;

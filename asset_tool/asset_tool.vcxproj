@@ -68,7 +68,14 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <PostBuildEventUseInBuild>true</PostBuildEventUseInBuild>
+    <TargetName>$(ProjectName)_d</TargetName>
+    <OutDir>$(SolutionDir)$(Platform)-$(Configuration)\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>$(SolutionDir)$(Platform)-$(Configuration)\</OutDir>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -81,12 +88,17 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)core/inc;$(ProjectDir)graphics/inc;$(ProjectDir)windows/inc;$(ProjectDir)input/inc;$(ProjectDir)time/inc;$(ProjectDir)../logger/;$(ProjectDir)../utility/;$(ProjectDir)../external/inc/vmath/;$(ProjectDir)../external/inc/directx12/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)../;$(ProjectDir)core/inc;$(ProjectDir)graphics/inc;$(ProjectDir)windows/inc;$(ProjectDir)input/inc;$(ProjectDir)time/inc;$(ProjectDir)resource/inc;$(ProjectDir)gui/inc;$(ProjectDir)application/;$(ProjectDir)../logger/;$(ProjectDir)../utility/;$(ProjectDir)../external/inc/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>PUG_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>$(ProjectDir)../logger/$(Platform)/$(Configuration)/;$(ProjectDir)../utility/$(Platform)/$(Configuration)/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>logger.lib;utility.lib;dxgi.lib;d3d12.lib;d3dcompiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)../logger/$(Platform)/$(Configuration)/;$(ProjectDir)../utility/$(Platform)/$(Configuration)/;$(ProjectDir)../imgui/$(Platform)/$(Configuration)/;$(ProjectDir)../external/lib/assimp/$(Platform)-$(Configuration)/;$(ProjectDir)../external/lib/texconv/$(Platform)-$(Configuration)/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>logger.lib;utility.lib;dxgi.lib;d3d12.lib;d3dcompiler.lib;assimp.lib;imgui.lib;directxtex.lib;texconv.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>copy $(ProjectDir)..\external\dll\$(Platform)-$(Configuration) $(OutDir)</Command>
+      <Message>Copy DLLs to our output directory</Message>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -108,37 +120,62 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)core/inc;$(ProjectDir)graphics/inc;$(ProjectDir)windows/inc;$(ProjectDir)input/inc;$(ProjectDir)time/inc;$(ProjectDir)../logger/;$(ProjectDir)../utility/;$(ProjectDir)../external/inc/vmath/;$(ProjectDir)../external/inc/directx12/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)../;$(ProjectDir)core/inc;$(ProjectDir)graphics/inc;$(ProjectDir)windows/inc;$(ProjectDir)input/inc;$(ProjectDir)time/inc;$(ProjectDir)resource/inc;$(ProjectDir)gui/inc;$(ProjectDir)application/;$(ProjectDir)../logger/;$(ProjectDir)../utility/;$(ProjectDir)../external/inc/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>$(ProjectDir)../logger/$(Platform)/$(Configuration)/;$(ProjectDir)../utility/$(Platform)/$(Configuration)/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>logger.lib;utility.lib;dxgi.lib;d3d12.lib;d3dcompiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)../logger/$(Platform)/$(Configuration)/;$(ProjectDir)../utility/$(Platform)/$(Configuration)/;$(ProjectDir)../imgui/$(Platform)/$(Configuration)/;$(ProjectDir)../external/lib/assimp/$(Platform)-$(Configuration)/;$(ProjectDir)../external/lib/texconv/$(Platform)-$(Configuration)/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>logger.lib;utility.lib;dxgi.lib;d3d12.lib;d3dcompiler.lib;assimp.lib;imgui.lib;texconv.lib;directxtex.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>copy $(ProjectDir)..\external\dll\$(Platform)-$(Configuration) $(OutDir)</Command>
+    </PostBuildEvent>
+    <PostBuildEvent>
+      <Message>Copy DLLs to our output directory</Message>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="application\app.cpp" />
+    <ClCompile Include="application\importers\mesh_converter.cpp" />
+    <ClCompile Include="application\importers\texture_converter.cpp" />
+    <ClCompile Include="application\sha1.cpp" />
     <ClCompile Include="core\src\asset_processor.cpp" />
-    <ClCompile Include="graphics\src\persistent_descriptor_heap.cpp" />
+    <ClCompile Include="graphics\src\dx12_constant_buffer.cpp" />
+    <ClCompile Include="graphics\src\dx12_persistent_descriptor_heap.cpp" />
     <ClCompile Include="graphics\src\resource\dx12_index_buffer.cpp" />
     <ClCompile Include="graphics\src\resource\dx12_vertex_buffer.cpp" />
     <ClCompile Include="graphics\src\resource\dx12_resource.cpp" />
     <ClCompile Include="graphics\src\resource\dx12_texture2D.cpp" />
     <ClCompile Include="graphics\src\dx12_shader_librarian.cpp" />
+    <ClCompile Include="gui\src\gui.cpp" />
     <ClCompile Include="input\src\input_monitor.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="graphics\src\dx12_graphics.cpp" />
+    <ClCompile Include="resource\src\load.cpp" />
     <ClCompile Include="time\src\timer.cpp" />
     <ClCompile Include="windows\src\windows_window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="application\asset_types.h" />
+    <ClInclude Include="application\importers\asset_converter.h" />
+    <ClInclude Include="application\asset_option_flags.h" />
+    <ClInclude Include="application\importers\mesh_converter.h" />
+    <ClInclude Include="application\importers\texture_converter.h" />
+    <ClInclude Include="application\sha1.h" />
+    <ClInclude Include="core\inc\app_intf.h" />
     <ClInclude Include="core\inc\asset_processor.h" />
     <ClInclude Include="core\inc\macro.h" />
     <ClInclude Include="core\inc\result_codes.h" />
     <ClInclude Include="core\inc\defines.h" />
     <ClInclude Include="core\inc\typedef.h" />
+    <ClInclude Include="graphics\inc\camera.h" />
     <ClInclude Include="graphics\inc\formats.h" />
-    <ClInclude Include="graphics\src\persistent_descriptor_heap.h" />
+    <ClInclude Include="graphics\inc\mesh.h" />
+    <ClInclude Include="graphics\inc\transform.h" />
+    <ClInclude Include="graphics\inc\vertex.h" />
+    <ClInclude Include="graphics\src\dx12_constant_buffer.h" />
+    <ClInclude Include="graphics\src\dx12_persistent_descriptor_heap.h" />
     <ClInclude Include="graphics\src\dx12_resource_creation.h" />
     <ClInclude Include="graphics\src\resource\dx12_index_buffer.h" />
     <ClInclude Include="graphics\src\resource\dx12_vertex_buffer.h" />
@@ -150,12 +187,28 @@
     <ClInclude Include="core\inc\pug_funcs.h" />
     <ClInclude Include="core\inc\handles.h" />
     <ClInclude Include="graphics\src\dx12_shader_librarian.h" />
+    <ClInclude Include="gui\inc\gui.h" />
     <ClInclude Include="input\inc\input.h" />
     <ClInclude Include="input\inc\input_message.h" />
     <ClInclude Include="input\inc\input_monitor.h" />
     <ClInclude Include="input\inc\key_codes.h" />
+    <ClInclude Include="resource\inc\dds.h" />
+    <ClInclude Include="resource\inc\load.h" />
     <ClInclude Include="time\inc\timer.h" />
     <ClInclude Include="windows\inc\windows_window.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="graphics\rsc\forward_pixel_shader.ps.hlsl">
+      <FileType>Document</FileType>
+    </None>
+    <FxCompile Include="graphics\rsc\forward_vertex_shader.vs.hlsl">
+      <FileType>Document</FileType>
+      <HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OutDir)%(Filename).h</HeaderFileOutput>
+      <HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutDir)%(Filename).h</HeaderFileOutput>
+    </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="graphics\inc\gpu_defines.inc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

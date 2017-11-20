@@ -3,6 +3,7 @@
 namespace pug {
 namespace assets {
 
+	
 	float GetDeltaTime();
 
 }

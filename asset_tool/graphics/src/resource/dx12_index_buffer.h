@@ -20,6 +20,7 @@ namespace graphics {
 			const DXGI_FORMAT a_indexFormat,
 			const uint32_t a_indexCount,
 			const D3D12_RESOURCE_STATES a_initialState);
+		~DX12IndexBuffer();
 
 		const D3D12_INDEX_BUFFER_VIEW GetView() const
 		{

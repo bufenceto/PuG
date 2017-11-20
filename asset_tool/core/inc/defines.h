@@ -1,3 +1,3 @@
 #pragma once
 
-#define PUG_INVALID_ID 0
+#define PUG_INVALID_ID 0u

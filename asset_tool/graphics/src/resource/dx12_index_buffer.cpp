@@ -25,6 +25,12 @@ DX12IndexBuffer::DX12IndexBuffer(
 	m_initialized = 1;
 }
 
+DX12IndexBuffer::~DX12IndexBuffer()
+{
+	m_view = {};
+	m_indexCount = 0;
+}
+
 const size_t DX12IndexBuffer::GetIndexSize() const
 {
 	return FormatToSize(m_view.Format);

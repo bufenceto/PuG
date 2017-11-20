@@ -10,28 +10,38 @@
 #include "core/inc/macro.h"
 #include "formats.h"
 
-#include "vmath.h"
+#include "vmath/vmath.h"
 
 using namespace pug;
 using namespace pug::assets;
 using namespace pug::assets::graphics;
 
+#define DX12_SET_NAME(a) a->SetName(L#a)
 #define SET_NAME(a) a.SetName(L#a)
+
+#define DX12_CBUFFER_ALIGNMENT (256)
+#define DX12_RESOURCE_SINGLE_TEXTURE_OR_CBUFFER_ALIGNMENT KB(64)
+#define DX12_ALIGNED_SIZE(size, alignment) ((size + (alignment - 1) & (~(alignment - 1))))
+#define DX12_CONSTANT_BUFFER_ELEMENT_SIZE(elementBytes) DX12_ALIGNED_SIZE(elementBytes, DX12_CBUFFER_ALIGNMENT)
 
 static const size_t FormatToSize(const DXGI_FORMAT format)
 {
 	switch (format)
 	{
+	case(DXGI_FORMAT_R8_UINT): return 1;
 	case(DXGI_FORMAT_R16_UINT): return 2;
 	case(DXGI_FORMAT_R32_UINT): return 4;
-	default: return 0;
+	case(DXGI_FORMAT_R32_FLOAT): return 4;
+	default: log::Warning("Format not found!"); return 0;
 	}
 }
+
 
 static DXGI_FORMAT ConvertFormat(PUG_FORMAT format)
 {
 	switch (format)
 	{
+	case PUG_FORMAT_R8_UINT: return DXGI_FORMAT_R8_UINT;
 	case PUG_FORMAT_R16_UINT: return DXGI_FORMAT_R16_UINT;
 	case PUG_FORMAT_R32_UINT: return DXGI_FORMAT_R32_UINT;
 
@@ -48,6 +58,7 @@ static DXGI_FORMAT ConvertFormat(PUG_FORMAT format)
 	case PUG_FORMAT_R32F: return DXGI_FORMAT_R32_FLOAT;
 	case PUG_FORMAT_BC3_UNORM: return DXGI_FORMAT_BC3_UNORM;
 	default:
+		log::Warning("Format not found!");
 		return DXGI_FORMAT_UNKNOWN;
 	}
 }

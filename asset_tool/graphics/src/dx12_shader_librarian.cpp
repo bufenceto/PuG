@@ -18,7 +18,7 @@
 #ifdef _DEBUG
 #define COMPILE_FLAGS D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION | D3DCOMPILE_WARNINGS_ARE_ERRORS
 #else
-#define COMPILE_FLAGS D3DCOMPILE_DEBUG | D3DCOMPILE_WARNINGS_ARE_ERRORS  | D3DCOMPILE_OPTIMIZATION_LEVEL3
+#define COMPILE_FLAGS D3DCOMPILE_DEBUG | D3DCOMPILE_WARNINGS_ARE_ERRORS | D3DCOMPILE_OPTIMIZATION_LEVEL3
 #endif
 
 using namespace std;
@@ -93,6 +93,10 @@ PUG_RESULT LoadShader(
 		{
 			uint64_t hlslFileSize = file_size(absoluteFilePath);
 			uint8_t* hlslFileBuffer = (uint8_t*)_malloca(hlslFileSize);//stack alloc for the file character array
+			if (hlslFileBuffer == nullptr)
+			{
+				return PUG_RESULT_ALLOCATION_FAILURE;
+			}
 
 			FILE* shaderFile = nullptr;
 			fopen_s(&shaderFile, absoluteFilePath.string().c_str(), "rb");
@@ -301,7 +305,7 @@ PUG_RESULT pug::assets::graphics::InitShaderLibrarian()
 			{//this is a hlsl file
 				auto relBeg = absolutePath.begin() + (len + 1);//+1 for the additional seperator
 				auto relEnd = absolutePath.end();
-				if (LoadShader(filePath, string(relBeg, relEnd)))
+				if (PUG_SUCCEEDED(LoadShader(filePath, string(relBeg, relEnd))))
 				{
 					Info("Loaded shader from path: %s", filePath.string().c_str());
 				}

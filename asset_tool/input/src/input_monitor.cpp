@@ -1,6 +1,6 @@
 #include "input_monitor.h"
 #include "input_message.h"
-#include "vmath.h"
+#include "vmath/vmath.h"
 
 #include "input.h"
 #include "graphics.h"
@@ -37,14 +37,14 @@ static uint32_t g_previousWindowMaximized;
 static Int2 g_currentWindowSize;
 static Int2 g_previousWindowSize;
 
-struct InputEvent
+struct Event
 {
 	uint32_t inputID;//the id of the thing that was pressed
 	uint32_t eventID;//what happened to the thing that was pressed
 	InputCallBack callback;
 };
 
-static std::vector<InputEvent> registeredEvents;
+static std::vector<Event> registeredEvents;
 static InputCallBack registeredQuitEvent;
 
 PUG_RESULT pug::input::InitializeInput(const uint32_t& windowMaximized, const Int2& windowSize)
@@ -77,7 +77,7 @@ PUG_RESULT pug::input::ResolveInput()
 			{
 				if (registeredEvents[i].inputID == inputID)
 				{
-					if (registeredEvents[i].eventID == (uint32_t)EInputEvent::PRESSED || registeredEvents[i].eventID == (uint32_t)EInputEvent::HELD)
+					if (registeredEvents[i].eventID == (uint32_t)INPUT_EVENT_PRESSED || registeredEvents[i].eventID == (uint32_t)INPUT_EVENT_HELD)
 					{
 						registeredEvents[i].callback();
 					}
@@ -91,7 +91,7 @@ PUG_RESULT pug::input::ResolveInput()
 			{
 				if (registeredEvents[i].inputID == inputID)
 				{
-					if (registeredEvents[i].eventID == (uint32_t)EInputEvent::HELD)
+					if (registeredEvents[i].eventID == (uint32_t)INPUT_EVENT_HELD)
 					{
 						registeredEvents[i].callback();
 					}
@@ -105,7 +105,7 @@ PUG_RESULT pug::input::ResolveInput()
 			{
 				if (registeredEvents[i].inputID == inputID)
 				{
-					if (registeredEvents[i].eventID == (uint32_t)EInputEvent::RELEASED)
+					if (registeredEvents[i].eventID == (uint32_t)INPUT_EVENT_RELEASED)
 					{
 						registeredEvents[i].callback();
 					}
@@ -151,40 +151,40 @@ PUG_RESULT pug::input::SubmitInputMessage(const InputMessage& message)
 	}
 	else if (message.msg == EMessage::BUTTON_DOWN)
 	{
-		if (message.data & (uint32_t)EButtonID::Left)
+		if (message.data & (uint32_t)BUTTON_ID_Left)
 		{
-			inputCurrent[(uint32_t)EButtonID::Left] = INPUT_DOWN;//left
-			if (inputPrevious[(uint32_t)EButtonID::Left])
+			inputCurrent[(uint32_t)BUTTON_ID_Left] = INPUT_DOWN;//left
+			if (inputPrevious[(uint32_t)BUTTON_ID_Left])
 			{
-				inputCurrent[(uint32_t)EButtonID::Left] = INPUT_HELD;//left
+				inputCurrent[(uint32_t)BUTTON_ID_Left] = INPUT_HELD;//left
 			}
 		}
-		if (message.data & (uint32_t)EButtonID::Right)
+		if (message.data & (uint32_t)BUTTON_ID_Right)
 		{
-			inputCurrent[(uint32_t)EButtonID::Right] = INPUT_DOWN;
-			if (inputPrevious[(uint32_t)EButtonID::Right])
+			inputCurrent[(uint32_t)BUTTON_ID_Right] = INPUT_DOWN;
+			if (inputPrevious[(uint32_t)BUTTON_ID_Right])
 			{
-				inputCurrent[(uint32_t)EButtonID::Right] = INPUT_HELD;//left
+				inputCurrent[(uint32_t)BUTTON_ID_Right] = INPUT_HELD;//left
 			}
 		}
-		if (message.data & (uint32_t)EButtonID::Middle)
+		if (message.data & (uint32_t)BUTTON_ID_Middle)
 		{
-			inputCurrent[(uint32_t)EButtonID::Middle] = INPUT_DOWN;
-			if (inputPrevious[(uint32_t)EButtonID::Middle])
+			inputCurrent[(uint32_t)BUTTON_ID_Middle] = INPUT_DOWN;
+			if (inputPrevious[(uint32_t)BUTTON_ID_Middle])
 			{
-				inputCurrent[(uint32_t)EButtonID::Middle] = INPUT_HELD;//left
+				inputCurrent[(uint32_t)BUTTON_ID_Middle] = INPUT_HELD;//left
 			}
 		}
 	}
 	else if (message.msg == EMessage::BUTTON_UP)
 	{
-		if (inputPrevious[(uint32_t)EButtonID::Left] && !(message.data & (uint32_t)EButtonID::Left))
+		if (inputPrevious[(uint32_t)BUTTON_ID_Left] && !(message.data & (uint32_t)BUTTON_ID_Left))
 		{
-			inputCurrent[(uint32_t)EButtonID::Left] = INPUT_UP;//left
+			inputCurrent[(uint32_t)BUTTON_ID_Left] = INPUT_UP;//left
 		}
-		if (inputPrevious[(uint32_t)EButtonID::Right] && !(message.data & (uint32_t)EButtonID::Right))
+		if (inputPrevious[(uint32_t)BUTTON_ID_Right] && !(message.data & (uint32_t)BUTTON_ID_Right))
 		{
-			inputCurrent[(uint32_t)EButtonID::Right] = INPUT_UP;
+			inputCurrent[(uint32_t)BUTTON_ID_Right] = INPUT_UP;
 		}
 	}
 	else if (message.msg == EMessage::MOUSE_MOVE)
@@ -228,9 +228,9 @@ PUG_RESULT pug::input::SubmitInputMessage(const InputMessage& message)
 	return PUG_RESULT_OK;
 }
 
-PUG_RESULT pug::input::RegisterKeyEvent(const EKeyID& key, const EInputEvent& event, const InputCallBack& callback)
+PUG_RESULT pug::input::RegisterKeyEvent(const KeyID& key, const InputEvent& event, const InputCallBack& callback)
 {
-	InputEvent ie =
+	Event ie =
 	{
 		(uint32_t)key,
 		(uint32_t)event,
@@ -241,9 +241,9 @@ PUG_RESULT pug::input::RegisterKeyEvent(const EKeyID& key, const EInputEvent& ev
 	return PUG_RESULT_OK;
 }
 
-PUG_RESULT pug::input::RegisterButtonEvent(const EButtonID& button, const EInputEvent& event, const InputCallBack& callback)
+PUG_RESULT pug::input::RegisterButtonEvent(const ButtonID& button, const InputEvent& event, const InputCallBack& callback)
 {
-	InputEvent ie =
+	Event ie =
 	{
 		(uint32_t)button,
 		(uint32_t)event,
@@ -271,12 +271,12 @@ Int2 pug::input::GetMouseDelta()
 	return currMousePosition - prevMousePosition;
 }
 
-bool pug::input::GetKey(EKeyID keyID)
+bool pug::input::GetKey(KeyID keyID)
 {
 	return inputCurrent[(uint32_t)keyID] != INPUT_DOWN;
 }
 
-bool pug::input::GetButton(EButtonID buttonID)
+bool pug::input::GetButton(ButtonID buttonID)
 {
 	return inputCurrent[(uint32_t)buttonID] == INPUT_DOWN;
 }

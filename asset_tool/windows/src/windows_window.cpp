@@ -61,10 +61,11 @@ PUG_RESULT WindowsWindow::Update()
 	return PUG_RESULT_OK;
 }
 
-PUG_RESULT WindowsWindow::Init(const vmath::Int2& a_size, const std::string& a_title)
+PUG_RESULT WindowsWindow::Init(const vmath::Int2& a_size, const std::string& a_title, const uint32_t& a_fullScreen)
 {
 	m_size = a_size;
 	m_title = a_title;
+	m_maximized = a_fullScreen;
 
 	WNDCLASS wc;
 	wc.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;// | CS_NOCLOSE;
@@ -260,10 +261,10 @@ EMessage pug::windows::ConvertMessage(UINT msg, WPARAM wParam)
 
 using namespace platform;
 
-Window* Window::Create(const vmath::Int2& a_size, const std::string& a_title)
+Window* Window::Create(const vmath::Int2& a_size, const std::string& a_title, const uint32_t& a_fullScreen)
 {
 	WindowsWindow* window = new WindowsWindow();
-	window->Init(a_size, a_title);
+	window->Init(a_size, a_title, a_fullScreen);
 
 	return window;
 }

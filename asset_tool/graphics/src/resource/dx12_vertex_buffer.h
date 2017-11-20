@@ -20,6 +20,7 @@ namespace graphics {
 			const size_t a_vertexStride_bytes,
 			const uint32_t a_vertexCount,
 			const D3D12_RESOURCE_STATES a_initialState);
+		~DX12VertexBuffer();
 
 		const D3D12_VERTEX_BUFFER_VIEW GetView() const
 		{

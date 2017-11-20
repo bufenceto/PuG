@@ -16,12 +16,26 @@ namespace graphics {
 			m_currentState = D3D12_RESOURCE_STATE_COMMON;
 			m_resource = nullptr;
 		}
-		virtual ~DX12Resource() = 0 {}
+		virtual ~DX12Resource() = 0 
+		{
+			m_initialized = 0;
+			m_currentState = D3D12_RESOURCE_STATE_COMMON;
+			m_resource = nullptr;
+		}
 
 		D3D12_RESOURCE_BARRIER Transition(D3D12_RESOURCE_STATES a_newState);
 		void SetName(const wchar_t* name)
 		{
 			m_resource->SetName(name);
+		}
+
+		ID3D12Resource* GetResource() const
+		{
+			return m_resource;
+		}
+		const D3D12_RESOURCE_STATES GetCurrentState() const
+		{
+			return m_currentState;
 		}
 		
 		uint32_t IsInitialized() const

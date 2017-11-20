@@ -1,6 +1,7 @@
 #pragma once
-#include "vmath.h"
+#include "vmath/vmath.h"
 #include "macro.h"
+#include "key_codes.h"
 //#include "vorpal_typedef.h"
 
 namespace pug{

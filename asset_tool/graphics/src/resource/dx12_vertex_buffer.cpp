@@ -22,3 +22,9 @@ DX12VertexBuffer::DX12VertexBuffer(
 	m_currentState = a_initialState;
 	m_initialized = 1;
 }
+
+DX12VertexBuffer::~DX12VertexBuffer()
+{
+	m_view = {};
+	m_vertexCount = {};
+}
