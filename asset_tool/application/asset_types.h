@@ -1,7 +1,7 @@
 #pragma once
 #include <cstdint>
 
-enum AssetType : uint32_t
+enum AssetType
 {
 	AssetType_Unknown = 0,
 	AssetType_Mesh = 1,
@@ -9,4 +9,7 @@ enum AssetType : uint32_t
 	AssetType_Material = 3,
 	AssetType_Shader = 4,
 	AssetType_NumAssetTypes,
+
+	AssetType_ForceSize = 0xffffffff
 };
+static_assert(sizeof(AssetType) == 4, "Enum size is not 4!");

@@ -48,23 +48,23 @@ string DetermineShaderTargetType(const string& fileName)
 {
 	if (fileName.find(".vs") != string::npos)
 	{
-		return "vs_5_0";
+		return "vs_5_1";
 	}
 	else if (fileName.find(".ps") != string::npos)
 	{
-		return "ps_5_0";
+		return "ps_5_1";
 	}
 	else if (fileName.find(".gs") != string::npos)
 	{
-		return "gs_5_0";
+		return "gs_5_1";
 	}
 	else if (fileName.find(".ds") != string::npos)
 	{
-		return "ds_5_0";
+		return "ds_5_1";
 	}
 	else if (fileName.find(".cs") != string::npos)
 	{
-		return "cs_5_0";
+		return "cs_5_1";
 	}
 	else
 	{
@@ -149,6 +149,7 @@ PUG_RESULT LoadShader(
 			{//clean up
 				res = PUG_RESULT_FAILED_TO_READ_FILE;
 			}
+			_freea(hlslFileBuffer);
 			fclose(shaderFile);
 		}
 		else

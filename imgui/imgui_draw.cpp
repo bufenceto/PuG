@@ -562,6 +562,8 @@ void ImDrawList::AddPolyline(const ImVec2* points, const int points_count, ImU32
                 _VtxWritePtr += 4;
             }
         }
+
+		_freea(temp_normals);
         _VtxCurrentIdx += (ImDrawIdx)vtx_count;
     }
     else
@@ -656,6 +658,7 @@ void ImDrawList::AddConvexPolyFilled(const ImVec2* points, const int points_coun
             _IdxWritePtr[3] = (ImDrawIdx)(vtx_outer_idx+(i0<<1)); _IdxWritePtr[4] = (ImDrawIdx)(vtx_outer_idx+(i1<<1)); _IdxWritePtr[5] = (ImDrawIdx)(vtx_inner_idx+(i1<<1));
             _IdxWritePtr += 6;
         }
+		_freea(temp_normals);
         _VtxCurrentIdx += (ImDrawIdx)vtx_count;
     }
     else

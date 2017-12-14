@@ -14,7 +14,7 @@
 #include "imgui/imgui.h"
 #include "vmath/vmath.h"
 
-#define MAX_GUI_MESHES 16
+#define MAX_GUI_MESHES 32
 
 using namespace vmath;
 using namespace pug;
@@ -110,6 +110,8 @@ PUG_RESULT pug::assets::gui::InitGUI(Window* window)
 		PUG_TRY(graphics::CreateIndexBuffer(nullptr, PUG_FORMAT_R16_UINT, 1, g_indexBuffers[i]));
 	}
 
+	_freea(pixelsFloat);
+
 	return PUG_RESULT_OK;
 }
 
@@ -133,6 +135,8 @@ PUG_RESULT pug::assets::gui::DestroyGUI()
 
 	//release font texture
 	DestroyTexture2D(g_fontTexture);
+
+	ImGui::Shutdown();
 
 	return PUG_RESULT_OK;
 }
@@ -194,8 +198,11 @@ PUG_RESULT pug::assets::gui::EndGUI(
 		const uint32_t indexStride = sizeof(cmdList->IdxBuffer[0]);
 		const uint8_t* indexDataReadPtr = (uint8_t*)indexData;
 
+		
 		for (int32_t j = 0; j < cmdList->CmdBuffer.size(); ++j)
 		{//write a mesh for each command
+			PUG_ASSERT(meshCounter < MAX_GUI_MESHES, "Exceeded maximum number of GUI meshes");
+
 			const ImDrawCmd* cmd = &cmdList->CmdBuffer[j];
 			const uint32_t indexCount = cmd->ElemCount;
 

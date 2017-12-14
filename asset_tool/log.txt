@@ -1,4 +1,4 @@
- -- 20/11/2017 - 14:35:38 BEGINNING LOG -- Debug Break Level set toError
+ -- 13/12/2017 - 13:5:23 BEGINNING LOG -- Debug Break Level set toError
 [INFO]: Initializing DX12...
 [INFO]: Creating graphics device...
 [INFO]: Adapter: NVIDIA GeForce GTX 1060
@@ -23,10 +23,271 @@
 [MESSAGE]: Success!
 [INFO]: Creating Root Signatures...
 [MESSAGE]: Success!
-[INFO]: Quit Event!
-[WARNING]: Destroying committed resource heap but a SRV page with index 0 was not empty!
-[WARNING]: Destroying committed resource heap but a RTV page with index 0 was not empty!
-[WARNING]: Destroying committed resource heap but a DSV page with index 0 was not empty!
-[INFO]: Quit Event!
-[INFO]: Quit Event!
- -- 20/11/2017 - 14:36:24 ENDING LOG -- 
+[INFO]: Finished importing asset library from D:\Git\PuG\library
+[INFO]: Input message was translated but not handled!
+[INFO]: Input message was translated but not handled!
+[INFO]: Input message was translated but not handled!
+[INFO]: Cooking new asset from path: D:\Git\PuG\assets\sponza\sponza.obj
+[INFO]: Importing Asset Dependency from lion.tga
+[INFO]: Importing Asset Dependency from lion.tga
+[INFO]: Importing Asset Dependency from lion_normal.png
+[INFO]: Cooking new asset from path: D:\Git\PuG\assets\lion.tga
+[INFO]: Importing Asset Dependency from vase_plant.tga
+[INFO]: Importing Asset Dependency from vase_plant.tga
+[INFO]: Finished cooking asset from D:\Git\PuG\assets\lion.tga
+[INFO]: Importing Asset Dependency from background.tga
+[INFO]: Importing Asset Dependency from background.tga
+[INFO]: Importing Asset Dependency from background_normal.png
+[INFO]: Skipped D:\Git\PuG\assets\lion.tga
+[INFO]: Finished cooking asset from D:\Git\PuG\assets\lion.tga
+[INFO]: Importing Asset Dependency from sponza_arch_diff.tga
+[INFO]: Importing Asset Dependency from sponza_arch_diff.tga
+[INFO]: Importing Asset Dependency from spnza_bricks_a_diff.tga
+[INFO]: Importing Asset Dependency from spnza_bricks_a_diff.tga
+[INFO]: Cooking new asset from path: D:\Git\PuG\assets\vase_plant.tga
+[INFO]: Importing Asset Dependency from spnza_bricks_a_normal.png
+[INFO]: Importing Asset Dependency from sponza_ceiling_a_diff.tga
+[INFO]: Finished cooking asset from D:\Git\PuG\assets\vase_plant.tga
+[INFO]: Importing Asset Dependency from sponza_ceiling_a_diff.tga
+[INFO]: Importing Asset Dependency from chain_texture.tga
+[INFO]: Importing Asset Dependency from chain_texture.tga
+[INFO]: Importing Asset Dependency from chain_texture_normal.png
+[INFO]: Cooking new asset from path: D:\Git\PuG\assets\background_normal.png
+[INFO]: Importing Asset Dependency from sponza_column_a_diff.tga
+[INFO]: Importing Asset Dependency from sponza_column_a_diff.tga
+[INFO]: Importing Asset Dependency from sponza_column_a_normal.png
+[INFO]: Importing Asset Dependency from sponza_column_b_diff.tga
+[INFO]: Importing Asset Dependency from sponza_column_b_diff.tga
+[INFO]: Finished cooking asset from D:\Git\PuG\assets\background_normal.png
+[INFO]: Importing Asset Dependency from sponza_column_b_normal.png
+[INFO]: Importing Asset Dependency from sponza_column_c_diff.tga
+[INFO]: Importing Asset Dependency from sponza_column_c_diff.tga
+[INFO]: Importing Asset Dependency from sponza_column_c_normal.png
+[INFO]: Importing Asset Dependency from sponza_details_diff.tga
+[INFO]: Cooking new asset from path: D:\Git\PuG\assets\sponza_ceiling_a_diff.tga
+[INFO]: Importing Asset Dependency from sponza_details_diff.tga
+[INFO]: Importing Asset Dependency from sponza_fabric_diff.tga
+[INFO]: Finished cooking asset from D:\Git\PuG\assets\sponza_ceiling_a_diff.tga
+[INFO]: Importing Asset Dependency from sponza_fabric_diff.tga
+[INFO]: Importing Asset Dependency from sponza_curtain_diff.tga
+[INFO]: Importing Asset Dependency from sponza_curtain_diff.tga
+[INFO]: Importing Asset Dependency from sponza_fabric_blue_diff.tga
+[INFO]: Cooking new asset from path: D:\Git\PuG\assets\sponza_column_b_diff.tga
+[INFO]: Importing Asset Dependency from sponza_fabric_blue_diff.tga
+[INFO]: Finished cooking asset from D:\Git\PuG\assets\sponza_column_b_diff.tga
+[INFO]: Importing Asset Dependency from sponza_fabric_green_diff.tga
+[INFO]: Importing Asset Dependency from sponza_fabric_green_diff.tga
+[INFO]: Importing Asset Dependency from sponza_curtain_green_diff.tga
+[INFO]: Importing Asset Dependency from sponza_curtain_green_diff.tga
+[INFO]: Cooking new asset from path: D:\Git\PuG\assets\sponza_fabric_diff.tga
+[INFO]: Importing Asset Dependency from sponza_curtain_blue_diff.tga
+[INFO]: Importing Asset Dependency from sponza_curtain_blue_diff.tga
+[INFO]: Finished cooking asset from D:\Git\PuG\assets\sponza_fabric_diff.tga
+[INFO]: Importing Asset Dependency from sponza_flagpole_diff.tga
+[INFO]: Importing Asset Dependency from sponza_flagpole_diff.tga
+[INFO]: Cooking new asset from path: D:\Git\PuG\assets\sponza_fabric_blue_diff.tga
+[INFO]: Importing Asset Dependency from sponza_floor_a_diff.tga
+[INFO]: Importing Asset Dependency from sponza_floor_a_diff.tga
+[INFO]: Finished cooking asset from D:\Git\PuG\assets\sponza_fabric_blue_diff.tga
+[INFO]: Importing Asset Dependency from sponza_thorn_diff.tga
+[INFO]: Importing Asset Dependency from sponza_thorn_diff.tga
+[INFO]: Importing Asset Dependency from sponza_thorn_normal.png
+[INFO]: Cooking new asset from path: D:\Git\PuG\assets\sponza_curtain_blue_diff.tga
+[INFO]: Importing Asset Dependency from sponza_roof_diff.tga
+[INFO]: Finished cooking asset from D:\Git\PuG\assets\sponza_curtain_blue_diff.tga
+[INFO]: Importing Asset Dependency from sponza_roof_diff.tga
+[INFO]: Importing Asset Dependency from vase_dif.tga
+[INFO]: Importing Asset Dependency from vase_dif.tga
+[INFO]: Cooking new asset from path: D:\Git\PuG\assets\sponza_floor_a_diff.tga
+[INFO]: Importing Asset Dependency from vase_normal.png
+[INFO]: Importing Asset Dependency from vase_hanging.tga
+[INFO]: Finished cooking asset from D:\Git\PuG\assets\sponza_floor_a_diff.tga
+[INFO]: Importing Asset Dependency from vase_hanging.tga
+[INFO]: Importing Asset Dependency from vase_round.tga
+[INFO]: Cooking new asset from path: D:\Git\PuG\assets\sponza_roof_diff.tga
+[INFO]: Importing Asset Dependency from vase_round.tga
+[INFO]: Finished cooking asset from D:\Git\PuG\assets\sponza_roof_diff.tga
+[INFO]: Importing Asset Dependency from vase_round_normal.png
+[INFO]: Cooking new asset from path: D:\Git\PuG\assets\vase_hanging.tga
+[INFO]: Finished cooking asset from D:\Git\PuG\assets\vase_hanging.tga
+[INFO]: Cooking new asset from path: D:\Git\PuG\assets\vase_round.tga
+[INFO]: Finished cooking asset from D:\Git\PuG\assets\vase_round.tga
+[INFO]: Cooking new asset from path: D:\Git\PuG\assets\vase_round_normal.png
+[INFO]: Finished cooking asset from D:\Git\PuG\assets\sponza\sponza.obj
+[INFO]: Finished cooking asset from D:\Git\PuG\assets\vase_round_normal.png
+[INFO]: Updating asset from path: D:\Git\PuG\assets\sponza\sponza.obj
+[INFO]: Cooking new asset from path: D:\Git\PuG\assets\vase_dif.tga
+[INFO]: Finished cooking asset from D:\Git\PuG\assets\vase_dif.tga
+[INFO]: Cooking new asset from path: D:\Git\PuG\assets\sponza_thorn_normal.png
+[INFO]: Finished cooking asset from D:\Git\PuG\assets\sponza_thorn_normal.png
+[INFO]: Cooking new asset from path: D:\Git\PuG\assets\sponza_thorn_diff.tga
+[INFO]: Finished cooking asset from D:\Git\PuG\assets\sponza_thorn_diff.tga
+[INFO]: Cooking new asset from path: D:\Git\PuG\assets\sponza_flagpole_diff.tga
+[INFO]: Finished cooking asset from D:\Git\PuG\assets\sponza_flagpole_diff.tga
+[INFO]: Cooking new asset from path: D:\Git\PuG\assets\sponza_curtain_green_diff.tga
+[INFO]: Finished cooking asset from D:\Git\PuG\assets\sponza_curtain_green_diff.tga
+[INFO]: Cooking new asset from path: D:\Git\PuG\assets\sponza_fabric_green_diff.tga
+[INFO]: Finished cooking asset from D:\Git\PuG\assets\sponza_fabric_green_diff.tga
+[INFO]: Cooking new asset from path: D:\Git\PuG\assets\sponza_curtain_diff.tga
+[INFO]: Finished cooking asset from D:\Git\PuG\assets\sponza_curtain_diff.tga
+[INFO]: Cooking new asset from path: D:\Git\PuG\assets\sponza_details_diff.tga
+[INFO]: Finished cooking asset from D:\Git\PuG\assets\sponza_details_diff.tga
+[INFO]: Cooking new asset from path: D:\Git\PuG\assets\sponza_column_c_normal.png
+[INFO]: Finished cooking asset from D:\Git\PuG\assets\sponza_column_c_normal.png
+[INFO]: Cooking new asset from path: D:\Git\PuG\assets\sponza_column_c_diff.tga
+[INFO]: Finished cooking asset from D:\Git\PuG\assets\sponza_column_c_diff.tga
+[INFO]: Cooking new asset from path: D:\Git\PuG\assets\sponza_column_b_normal.png
+[INFO]: Finished cooking asset from D:\Git\PuG\assets\sponza_column_b_normal.png
+[INFO]: Cooking new asset from path: D:\Git\PuG\assets\sponza_column_a_normal.png
+[INFO]: Finished cooking asset from D:\Git\PuG\assets\sponza_column_a_normal.png
+[INFO]: Cooking new asset from path: D:\Git\PuG\assets\sponza_column_a_diff.tga
+[INFO]: Finished cooking asset from D:\Git\PuG\assets\sponza_column_a_diff.tga
+[INFO]: Cooking new asset from path: D:\Git\PuG\assets\chain_texture_normal.png
+[INFO]: Finished cooking asset from D:\Git\PuG\assets\chain_texture_normal.png
+[INFO]: Cooking new asset from path: D:\Git\PuG\assets\chain_texture.tga
+[INFO]: Finished cooking asset from D:\Git\PuG\assets\chain_texture.tga
+[INFO]: Cooking new asset from path: D:\Git\PuG\assets\spnza_bricks_a_normal.png
+[INFO]: Finished cooking asset from D:\Git\PuG\assets\spnza_bricks_a_normal.png
+[INFO]: Cooking new asset from path: D:\Git\PuG\assets\spnza_bricks_a_diff.tga
+[INFO]: Finished cooking asset from D:\Git\PuG\assets\spnza_bricks_a_diff.tga
+[INFO]: Cooking new asset from path: D:\Git\PuG\assets\sponza_arch_diff.tga
+[INFO]: Finished cooking asset from D:\Git\PuG\assets\sponza_arch_diff.tga
+[INFO]: Cooking new asset from path: D:\Git\PuG\assets\background.tga
+[INFO]: Finished cooking asset from D:\Git\PuG\assets\background.tga
+[INFO]: Cooking new asset from path: D:\Git\PuG\assets\lion_normal.png
+[INFO]: Finished cooking asset from D:\Git\PuG\assets\lion_normal.png
+[INFO]: Cooking new asset from path: D:\Git\PuG\assets\vase_normal.png
+[INFO]: Finished cooking asset from D:\Git\PuG\assets\vase_normal.png
+[INFO]: Input message was translated but not handled!
+[INFO]: Importing Asset Dependency from lion.tga
+[INFO]: Importing Asset Dependency from lion.tga
+[INFO]: Importing Asset Dependency from lion_normal.png
+[INFO]: Skipped D:\Git\PuG\assets\lion.tga
+[INFO]: Finished cooking asset from D:\Git\PuG\assets\lion.tga
+[INFO]: Importing Asset Dependency from vase_plant.tga
+[INFO]: Importing Asset Dependency from vase_plant.tga
+[INFO]: Importing Asset Dependency from background.tga
+[INFO]: Skipped D:\Git\PuG\assets\lion.tga
+[INFO]: Importing Asset Dependency from background.tga
+[INFO]: Finished cooking asset from D:\Git\PuG\assets\lion.tga
+[INFO]: Importing Asset Dependency from background_normal.png
+[INFO]: Importing Asset Dependency from sponza_arch_diff.tga
+[INFO]: Importing Asset Dependency from sponza_arch_diff.tga
+[INFO]: Importing Asset Dependency from spnza_bricks_a_diff.tga
+[INFO]: Importing Asset Dependency from spnza_bricks_a_diff.tga
+[INFO]: Importing Asset Dependency from spnza_bricks_a_normal.png
+[INFO]: Skipped D:\Git\PuG\assets\lion_normal.png
+[INFO]: Finished cooking asset from D:\Git\PuG\assets\lion_normal.png
+[INFO]: Importing Asset Dependency from sponza_ceiling_a_diff.tga
+[INFO]: Importing Asset Dependency from sponza_ceiling_a_diff.tga
+[INFO]: Importing Asset Dependency from chain_texture.tga
+[INFO]: Skipped D:\Git\PuG\assets\background_normal.png
+[INFO]: Finished cooking asset from D:\Git\PuG\assets\background_normal.png
+[INFO]: Importing Asset Dependency from chain_texture.tga
+[INFO]: Importing Asset Dependency from chain_texture_normal.png
+[INFO]: Importing Asset Dependency from sponza_column_a_diff.tga
+[INFO]: Skipped D:\Git\PuG\assets\sponza_ceiling_a_diff.tga
+[INFO]: Importing Asset Dependency from sponza_column_a_diff.tga
+[INFO]: Finished cooking asset from D:\Git\PuG\assets\sponza_ceiling_a_diff.tga
+[INFO]: Importing Asset Dependency from sponza_column_a_normal.png
+[INFO]: Importing Asset Dependency from sponza_column_b_diff.tga
+[INFO]: Importing Asset Dependency from sponza_column_b_diff.tga
+[INFO]: Skipped D:\Git\PuG\assets\chain_texture.tga
+[INFO]: Importing Asset Dependency from sponza_column_b_normal.png
+[INFO]: Finished cooking asset from D:\Git\PuG\assets\chain_texture.tga
+[INFO]: Importing Asset Dependency from sponza_column_c_diff.tga
+[INFO]: Importing Asset Dependency from sponza_column_c_diff.tga
+[INFO]: Importing Asset Dependency from sponza_column_c_normal.png
+[INFO]: Skipped D:\Git\PuG\assets\sponza_column_a_diff.tga
+[INFO]: Importing Asset Dependency from sponza_details_diff.tga
+[INFO]: Finished cooking asset from D:\Git\PuG\assets\sponza_column_a_diff.tga
+[INFO]: Importing Asset Dependency from sponza_details_diff.tga
+[INFO]: Importing Asset Dependency from sponza_fabric_diff.tga
+[INFO]: Importing Asset Dependency from sponza_fabric_diff.tga
+[INFO]: Skipped D:\Git\PuG\assets\sponza_column_b_normal.png
+[INFO]: Finished cooking asset from D:\Git\PuG\assets\sponza_column_b_normal.png
+[INFO]: Importing Asset Dependency from sponza_curtain_diff.tga
+[INFO]: Importing Asset Dependency from sponza_curtain_diff.tga
+[INFO]: Importing Asset Dependency from sponza_fabric_blue_diff.tga
+[INFO]: Skipped D:\Git\PuG\assets\sponza_details_diff.tga
+[INFO]: Importing Asset Dependency from sponza_fabric_blue_diff.tga
+[INFO]: Finished cooking asset from D:\Git\PuG\assets\sponza_details_diff.tga
+[INFO]: Importing Asset Dependency from sponza_fabric_green_diff.tga
+[INFO]: Skipped D:\Git\PuG\assets\sponza_fabric_diff.tga
+[INFO]: Finished cooking asset from D:\Git\PuG\assets\sponza_fabric_diff.tga
+[INFO]: Importing Asset Dependency from sponza_fabric_green_diff.tga
+[INFO]: Importing Asset Dependency from sponza_curtain_green_diff.tga
+[INFO]: Importing Asset Dependency from sponza_curtain_green_diff.tga
+[INFO]: Importing Asset Dependency from sponza_curtain_blue_diff.tga
+[INFO]: Skipped D:\Git\PuG\assets\sponza_fabric_blue_diff.tga
+[INFO]: Finished cooking asset from D:\Git\PuG\assets\sponza_fabric_blue_diff.tga
+[INFO]: Importing Asset Dependency from sponza_curtain_blue_diff.tga
+[INFO]: Importing Asset Dependency from sponza_flagpole_diff.tga
+[INFO]: Importing Asset Dependency from sponza_flagpole_diff.tga
+[INFO]: Skipped D:\Git\PuG\assets\sponza_fabric_green_diff.tga
+[INFO]: Importing Asset Dependency from sponza_floor_a_diff.tga
+[INFO]: Finished cooking asset from D:\Git\PuG\assets\sponza_fabric_green_diff.tga
+[INFO]: Importing Asset Dependency from sponza_floor_a_diff.tga
+[INFO]: Importing Asset Dependency from sponza_thorn_diff.tga
+[INFO]: Skipped D:\Git\PuG\assets\sponza_curtain_blue_diff.tga
+[INFO]: Importing Asset Dependency from sponza_thorn_diff.tga
+[INFO]: Finished cooking asset from D:\Git\PuG\assets\sponza_curtain_blue_diff.tga
+[INFO]: Importing Asset Dependency from sponza_thorn_normal.png
+[INFO]: Importing Asset Dependency from sponza_roof_diff.tga
+[INFO]: Importing Asset Dependency from sponza_roof_diff.tga
+[INFO]: Skipped D:\Git\PuG\assets\sponza_floor_a_diff.tga
+[INFO]: Importing Asset Dependency from vase_dif.tga
+[INFO]: Finished cooking asset from D:\Git\PuG\assets\sponza_floor_a_diff.tga
+[INFO]: Importing Asset Dependency from vase_dif.tga
+[INFO]: Importing Asset Dependency from vase_normal.png
+[INFO]: Importing Asset Dependency from vase_hanging.tga
+[INFO]: Importing Asset Dependency from vase_hanging.tga
+[INFO]: Skipped D:\Git\PuG\assets\sponza_thorn_diff.tga
+[INFO]: Importing Asset Dependency from vase_round.tga
+[INFO]: Finished cooking asset from D:\Git\PuG\assets\sponza_thorn_diff.tga
+[INFO]: Importing Asset Dependency from vase_round.tga
+[INFO]: Importing Asset Dependency from vase_round_normal.png
+[INFO]: Skipped D:\Git\PuG\assets\vase_dif.tga
+[INFO]: Finished cooking asset from D:\Git\PuG\assets\vase_dif.tga
+[INFO]: Skipped D:\Git\PuG\assets\vase_round.tga
+[INFO]: Finished cooking asset from D:\Git\PuG\assets\vase_round.tga
+[INFO]: Skipped D:\Git\PuG\assets\vase_round_normal.png
+[INFO]: Finished cooking asset from D:\Git\PuG\assets\vase_round_normal.png
+[INFO]: Finished cooking asset from D:\Git\PuG\assets\sponza\sponza.obj
+[INFO]: Skipped D:\Git\PuG\assets\vase_hanging.tga
+[INFO]: Finished cooking asset from D:\Git\PuG\assets\vase_hanging.tga
+[INFO]: Skipped D:\Git\PuG\assets\vase_normal.png
+[INFO]: Finished cooking asset from D:\Git\PuG\assets\vase_normal.png
+[INFO]: Skipped D:\Git\PuG\assets\sponza_roof_diff.tga
+[INFO]: Finished cooking asset from D:\Git\PuG\assets\sponza_roof_diff.tga
+[INFO]: Skipped D:\Git\PuG\assets\sponza_thorn_normal.png
+[INFO]: Finished cooking asset from D:\Git\PuG\assets\sponza_thorn_normal.png
+[INFO]: Skipped D:\Git\PuG\assets\sponza_flagpole_diff.tga
+[INFO]: Skipped D:\Git\PuG\assets\sponza_curtain_green_diff.tga
+[INFO]: Finished cooking asset from D:\Git\PuG\assets\sponza_flagpole_diff.tga
+[INFO]: Finished cooking asset from D:\Git\PuG\assets\sponza_curtain_green_diff.tga
+[INFO]: Skipped D:\Git\PuG\assets\sponza_curtain_diff.tga
+[INFO]: Skipped D:\Git\PuG\assets\sponza_column_c_normal.png
+[INFO]: Finished cooking asset from D:\Git\PuG\assets\sponza_curtain_diff.tga
+[INFO]: Finished cooking asset from D:\Git\PuG\assets\sponza_column_c_normal.png
+[INFO]: Skipped D:\Git\PuG\assets\sponza_column_c_diff.tga
+[INFO]: Skipped D:\Git\PuG\assets\sponza_column_b_diff.tga
+[INFO]: Finished cooking asset from D:\Git\PuG\assets\sponza_column_c_diff.tga
+[INFO]: Finished cooking asset from D:\Git\PuG\assets\sponza_column_b_diff.tga
+[INFO]: Skipped D:\Git\PuG\assets\chain_texture_normal.png
+[INFO]: Finished cooking asset from D:\Git\PuG\assets\chain_texture_normal.png
+[INFO]: Skipped D:\Git\PuG\assets\sponza_column_a_normal.png
+[INFO]: Finished cooking asset from D:\Git\PuG\assets\sponza_column_a_normal.png
+[INFO]: Skipped D:\Git\PuG\assets\spnza_bricks_a_normal.png
+[INFO]: Finished cooking asset from D:\Git\PuG\assets\spnza_bricks_a_normal.png
+[INFO]: Skipped D:\Git\PuG\assets\spnza_bricks_a_diff.tga
+[INFO]: Finished cooking asset from D:\Git\PuG\assets\spnza_bricks_a_diff.tga
+[INFO]: Skipped D:\Git\PuG\assets\sponza_arch_diff.tga
+[INFO]: Finished cooking asset from D:\Git\PuG\assets\sponza_arch_diff.tga
+[INFO]: Skipped D:\Git\PuG\assets\background.tga
+[INFO]: Finished cooking asset from D:\Git\PuG\assets\background.tga
+[INFO]: Skipped D:\Git\PuG\assets\vase_plant.tga
+[INFO]: Finished cooking asset from D:\Git\PuG\assets\vase_plant.tga
+[INFO]: Input message was translated but not handled!
+[INFO]: Input message was translated but not handled!
+[INFO]: Cooking new asset from path: D:\Git\PuG\assets\sponza\sponza.obj

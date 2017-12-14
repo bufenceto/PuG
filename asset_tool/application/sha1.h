@@ -6,6 +6,7 @@ namespace assets {
 	class SHA1Hash
 	{
 	public:
+		SHA1Hash() = default;
 		SHA1Hash(const char* string);
 		SHA1Hash(const SHA1Hash& other);//copy
 		SHA1Hash(SHA1Hash&& other);//move

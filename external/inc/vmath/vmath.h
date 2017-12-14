@@ -133,13 +133,13 @@ namespace vmath
 			y = VECTOR_DEFAULT;
 		}
 		//build vector3 from one float
-		Vector2(const float& pF)
+		Vector2(const float pF)
 		{
 			x = pF;
 			y = pF;
 		}
 		//build vector2 from different floats
-		Vector2(const float& pX, const float& pY)
+		Vector2(const float pX, const float pY)
 		{
 			x = pX;
 			y = pY;
@@ -169,22 +169,22 @@ namespace vmath
 			return Vector2(a.x * b.x, a.y * b.y);
 		}
 		//scale vector	
-		friend Vector2 operator* (const Vector2& a, const float& b)
+		friend Vector2 operator* (const Vector2& a, const float b)
 		{
 			return Vector2(a.x * b, a.y * b);
 		}
 		//scale vector							  		    
-		friend Vector2 operator/ (const Vector2& a, const float& b)
+		friend Vector2 operator/ (const Vector2& a, const float b)
 		{
 			return Vector2(a.x / b, a.y / b);
 		}
 		//scale vector
-		friend Vector2 operator* (const float& a, const Vector2& b)
+		friend Vector2 operator* (const float a, const Vector2& b)
 		{
 			return Vector2(a * b.x, a * b.y);
 		}
 		//scale vector									   
-		friend Vector2 operator/ (const float& a, const Vector2& b)
+		friend Vector2 operator/ (const float a, const Vector2& b)
 		{
 			return Vector2(a / b.x, a / b.y);
 		}
@@ -221,13 +221,13 @@ namespace vmath
 			y = y - a.y;
 			return *this;
 		}
-		Vector2& operator*= (const float& a)
+		Vector2& operator*= (const float a)
 		{
 			x = x * a;
 			y = y * a;
 			*this;
 		}
-		Vector2& operator/= (const float& a)
+		Vector2& operator/= (const float a)
 		{
 			x = x / a;
 			y = y / a;
@@ -255,14 +255,14 @@ namespace vmath
 			y = pY;
 		}
 		//build matrix from 4 floats
-		Matrix2(const float& pXX, const float& pXY,
-				const float& pYX, const float& pYY)
+		Matrix2(const float pXX, const float pXY,
+				const float pYX, const float pYY)
 		{
 			x = Vector2(pXX, pXY);
 			y = Vector2(pYX, pYY);
 		}
 		//build a rotation matrix from an euler angle
-		Matrix2(const float& pEulerRotation_radians)
+		Matrix2(const float pEulerRotation_radians)
 		{
 			float xr = cosf(pEulerRotation_radians);
 			float yr = sinf(pEulerRotation_radians);
@@ -291,7 +291,7 @@ namespace vmath
 						   Dot(b, Vector2(a.x.y, a.y.y)));
 		}
 		//scale matrix
-		friend Matrix2 operator* (const float& a, const Matrix2& b)
+		friend Matrix2 operator* (const float a, const Matrix2& b)
 		{
 			return Matrix2(a * b.x, a * b.y);
 		}
@@ -362,14 +362,14 @@ namespace vmath
 			z = VECTOR_DEFAULT;
 		}
 		//assign same value to all components
-		Vector3(const float& pF)
+		Vector3(const float pF)
 		{
 			x = pF;
 			y = pF;
 			z = pF;
 		}
 		//build vector from 3 floats
-		Vector3(const float& pX, const float& pY, const float& pZ)
+		Vector3(const float pX, const float pY, const float pZ)
 		{
 			x = pX;
 			y = pY;
@@ -405,17 +405,17 @@ namespace vmath
 			return Vector3(a.x / b.x, a.y / b.y, a.z / b.z);
 		}
 		//scale vector
-		friend Vector3 operator* (const Vector3& a, const float& b)
+		friend Vector3 operator* (const Vector3& a, const float b)
 		{
 			return Vector3(a.x * b, a.y * b, a.z * b);
 		}
 		//scale vector
-		friend Vector3 operator* (const float& a, const Vector3& b)
+		friend Vector3 operator* (const float a, const Vector3& b)
 		{
 			return Vector3(a * b.x, a * b.y, a * b.z);
 		}
 		//scale vector
-		friend Vector3 operator/ (const Vector3& a, const float& b)
+		friend Vector3 operator/ (const Vector3& a, const float b)
 		{
 			return Vector3(a.x / b, a.y / b, a.z / b);
 		}
@@ -461,14 +461,14 @@ namespace vmath
 			z = z * a.z;
 			return *this;
 		}
-		Vector3& operator*= (const float& a)
+		Vector3& operator*= (const float a)
 		{
 			x = x * a;
 			y = y * a;
 			z = z * a;
 			return *this;
 		}
-		Vector3& operator/= (const float& a)
+		Vector3& operator/= (const float a)
 		{
 			x = x / a;
 			y = y / a;
@@ -499,9 +499,9 @@ namespace vmath
 			z = pZ;
 		}
 		//build matrix from floats
-		Matrix3(const float& pXX, const float& pXY, const float& pXZ,
-				const float& pYX, const float& pYY, const float& pYZ,
-				const float& pZX, const float& pZY, const float& pZZ)
+		Matrix3(const float pXX, const float pXY, const float pXZ,
+				const float pYX, const float pYY, const float pYZ,
+				const float pZX, const float pZY, const float pZZ)
 		{
 			x = Vector3(pXX, pXY, pXZ);
 			y = Vector3(pYX, pYY, pYZ);
@@ -552,17 +552,17 @@ namespace vmath
 						   Dot(b, Vector3(a.x.z, a.y.z, a.z.z)));
 		}
 		//scale a matrix
-		friend Matrix3 operator* (const float& a, const Matrix3& b)
+		friend Matrix3 operator* (const float a, const Matrix3& b)
 		{
 			return Matrix3(a * b.x, a * b.y, a * b.z);
 		}
 		//scale a matrix
-		friend Matrix3 operator* (const Matrix3& a, const float& b)
+		friend Matrix3 operator* (const Matrix3& a, const float b)
 		{
 			return Matrix3(a.x * b, a.y * b, a.z * b);
 		}
 		//scale a matrix
-		friend Matrix3 operator/ (const Matrix3& a, const float& b)
+		friend Matrix3 operator/ (const Matrix3& a, const float b)
 		{
 			float invb = 1.0f / b;
 			return Matrix3(a.x * invb, a.y * invb, a.z * invb);
@@ -619,14 +619,14 @@ namespace vmath
 			z = z * a.z;
 			return *this;
 		}
-		Matrix3& operator*= (const float& a)
+		Matrix3& operator*= (const float a)
 		{
 			x = x * a;
 			y = y * a;
 			z = z * a;
 			return *this;
 		}
-		Matrix3& operator/= (const float& a)
+		Matrix3& operator/= (const float a)
 		{
 			x = x / a;
 			y = y / a;
@@ -651,7 +651,7 @@ namespace vmath
 			w = VECTOR_DEFAULT;
 		}
 		//build vector from a single float
-		Vector4(const float& pF)
+		Vector4(const float pF)
 		{
 			x = pF;
 			y = pF;
@@ -659,7 +659,7 @@ namespace vmath
 			w = pF;
 		}
 		//build a vector from 4 floats
-		Vector4(const float& pX, const float& pY, const float& pZ, const float& pW)
+		Vector4(const float pX, const float pY, const float pZ, const float pW)
 		{
 			x = pX;
 			y = pY;
@@ -667,7 +667,7 @@ namespace vmath
 			w = pW;
 		}
 		//build a vector4 from a Vector3 and a float
-		Vector4(const Vector3& pVector, const float& pF)
+		Vector4(const Vector3& pVector, const float pF)
 		{
 			x = pVector.x;
 			y = pVector.y;
@@ -699,17 +699,17 @@ namespace vmath
 			return Vector4(a.x * b.x, a.y * b.y, a.z * b.z, a.w * b.w);
 		}
 		//scale a vector
-		friend Vector4 operator* (const Vector4& a, const float& b)
+		friend Vector4 operator* (const Vector4& a, const float b)
 		{
 			return Vector4(a.x * b, a.y * b, a.z * b, a.w * b);
 		}
 		//scale a vector
-		friend Vector4 operator/ (const Vector4& a, const float& b)
+		friend Vector4 operator/ (const Vector4& a, const float b)
 		{
 			return Vector4(a.x / b, a.y / b, a.z / b, a.w / b);
 		}
 		//scale a vector
-		friend Vector4 operator* (const float& a, const Vector4& b)
+		friend Vector4 operator* (const float a, const Vector4& b)
 		{
 			return Vector4(a * b.x, a * b.y, a * b.z, a * b.w);
 		}
@@ -758,7 +758,7 @@ namespace vmath
 			w = w * a.w;
 			return *this;
 		}
-		Vector4& operator*= (const float& a)
+		Vector4& operator*= (const float a)
 		{
 			x = x - a;
 			y = y - a;
@@ -766,7 +766,7 @@ namespace vmath
 			w = w - a;
 			return *this;
 		}
-		Vector4& operator/= (const float& a)
+		Vector4& operator/= (const float  a)
 		{
 			x = x / a;
 			y = y / a;
@@ -800,10 +800,10 @@ namespace vmath
 			w = pW;
 		}
 		//build a matrix from 16 floats
-		Matrix4(const float& pXX, const float& pXY, const float& pXZ, const float& pXW,
-				const float& pYX, const float& pYY, const float& pYZ, const float& pYW,
-				const float& pZX, const float& pZY, const float& pZZ, const float& pZW,
-				const float& pWX, const float& pWY, const float& pWZ, const float& pWW)
+		Matrix4(const float pXX, const float pXY, const float pXZ, const float pXW,
+				const float pYX, const float pYY, const float pYZ, const float pYW,
+				const float pZX, const float pZY, const float pZZ, const float pZW,
+				const float pWX, const float pWY, const float pWZ, const float pWW)
 		{
 			x = Vector4(pXX, pXY, pXZ, pXW);
 			y = Vector4(pYX, pYY, pYZ, pYW);
@@ -835,15 +835,15 @@ namespace vmath
 						      Dot(b, Vector4(a.x.z, a.y.z, a.z.z, a.w.z)),
 					         Dot(b, Vector4(a.x.w, a.y.w, a.z.w, a.w.w)));
 		}
-		friend Matrix4 operator* (const float& a, const Matrix4& b)
+		friend Matrix4 operator* (const float a, const Matrix4& b)
 		{
 			return Matrix4(b.x * a, b.y * a, b.z * a, b.w * a);
 		}
-		friend Matrix4 operator* (const Matrix4& b, const float& a)
+		friend Matrix4 operator* (const Matrix4& b, const float a)
 		{
 			return Matrix4(b.x * a, b.y * a, b.z * a, b.w * a);
 		}
-		friend Matrix4 operator/ (const Matrix4& a, const float& b)
+		friend Matrix4 operator/ (const Matrix4& a, const float b)
 		{
 			float c = 1.0f / b;
 			return Matrix4(a.x * c, a.y * c, a.z * c, a.w * c);
@@ -988,17 +988,17 @@ namespace vmath
 								  (a.w * b.w) - (a.x * b.x) - (a.y * b.y) - (a.z * b.z));
 		}
 		//scale a quaternion
-		friend Quaternion operator* (const Quaternion& a, const float& b)
+		friend Quaternion operator* (const Quaternion& a, const float b)
 		{
 			return Quaternion(a.x * b, a.y * b, a.z * b, a.w * b);
 		}
 		//scale a quaternion
-		friend Quaternion operator* (const float& b, const Quaternion& a)
+		friend Quaternion operator* (const float b, const Quaternion& a)
 		{
 			return Quaternion(b * a.x, b * a.y, b * a.z, b * a.w);
 		}
 		//scale a quaternion
-		friend Quaternion operator/ (const Quaternion& a, const float& b)
+		friend Quaternion operator/ (const Quaternion& a, const float b)
 		{
 			return Quaternion(a.x / b, a.y / b, a.z / b, a.w / b);
 		}

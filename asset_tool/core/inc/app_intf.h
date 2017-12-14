@@ -25,6 +25,8 @@ namespace graphics {
 	class iApp
 	{
 	public:
+		virtual ~iApp() = 0 {}
+
 		static iApp* Create();
 
 		virtual bool Initialize() = 0;

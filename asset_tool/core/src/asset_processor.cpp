@@ -133,6 +133,9 @@ void pug::assets::RunAssetProcessor()
 
 void pug::assets::DestroyAssetProcessor()
 {
+	g_app->Destroy();
+	delete g_app;
+
 	PUG_TRY(gui::DestroyGUI());
 	PUG_TRY(graphics::DestroyGraphics());
 	

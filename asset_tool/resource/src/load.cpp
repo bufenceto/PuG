@@ -247,7 +247,22 @@ PUG_RESULT pug::assets::resource::LoadMesh(
 	out_indexCount = indexCountArray;
 	out_rawMaterials = rawMaterialArray;
 	out_meshCount = scene->mNumMeshes;
-	
+
+	_freea(tmpVerticesArray);
+	_freea(tmpVertexCountArray);
+	_freea(tmpIndicesArray);
+	_freea(tmpIndexCountArray);
+
+	for (uint32_t i = 0; i < scene->mNumMaterials; ++i)
+	{
+		tmpRawMaterialArray[i].diffuseTexturePath.~path();
+		tmpRawMaterialArray[i].specularTexturePath.~path();
+		tmpRawMaterialArray[i].normalTexturePath.~path();
+		tmpRawMaterialArray[i].emissiveTexturePath.~path();
+	}
+
+	_freea(tmpRawMaterialArray);
+
 	return PUG_RESULT_OK;
 }
 

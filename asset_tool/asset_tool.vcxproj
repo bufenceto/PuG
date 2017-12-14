@@ -94,6 +94,7 @@
     <Link>
       <AdditionalLibraryDirectories>$(ProjectDir)../logger/$(Platform)/$(Configuration)/;$(ProjectDir)../utility/$(Platform)/$(Configuration)/;$(ProjectDir)../imgui/$(Platform)/$(Configuration)/;$(ProjectDir)../external/lib/assimp/$(Platform)-$(Configuration)/;$(ProjectDir)../external/lib/texconv/$(Platform)-$(Configuration)/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>logger.lib;utility.lib;dxgi.lib;d3d12.lib;d3dcompiler.lib;assimp.lib;imgui.lib;directxtex.lib;texconv.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <PostBuildEvent>
       <Command>copy $(ProjectDir)..\external\dll\$(Platform)-$(Configuration) $(OutDir)</Command>
@@ -137,8 +138,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="application\app.cpp" />
+    <ClCompile Include="application\database\asset_database.cpp" />
+    <ClCompile Include="application\gui\gui_builder.cpp" />
+    <ClCompile Include="application\directory_monitor\asset_directory_monitor.cpp" />
+    <ClCompile Include="application\importers\asset_cooker.cpp" />
     <ClCompile Include="application\importers\mesh_converter.cpp" />
     <ClCompile Include="application\importers\texture_converter.cpp" />
+    <ClCompile Include="application\loaders\mesh_reader.cpp" />
     <ClCompile Include="application\sha1.cpp" />
     <ClCompile Include="core\src\asset_processor.cpp" />
     <ClCompile Include="graphics\src\dx12_constant_buffer.cpp" />
@@ -157,11 +163,21 @@
     <ClCompile Include="windows\src\windows_window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="application\app_utility.h" />
     <ClInclude Include="application\asset_types.h" />
+    <ClInclude Include="application\database\asset_database.h" />
+    <ClInclude Include="application\gui\gui_builder.h" />
     <ClInclude Include="application\importers\asset_converter.h" />
     <ClInclude Include="application\asset_option_flags.h" />
+    <ClInclude Include="application\directory_monitor\asset_directory_monitor.h" />
+    <ClInclude Include="application\importers\asset_cooker.h" />
+    <ClInclude Include="application\importers\asset_settings.h" />
+    <ClInclude Include="application\importers\cook_job.h" />
     <ClInclude Include="application\importers\mesh_converter.h" />
     <ClInclude Include="application\importers\texture_converter.h" />
+    <ClInclude Include="application\loaders\material.h" />
+    <ClInclude Include="application\loaders\mesh_reader.h" />
+    <ClInclude Include="application\loaders\texture_reference.h" />
     <ClInclude Include="application\sha1.h" />
     <ClInclude Include="core\inc\app_intf.h" />
     <ClInclude Include="core\inc\asset_processor.h" />

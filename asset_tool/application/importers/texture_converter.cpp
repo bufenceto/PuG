@@ -32,11 +32,12 @@ bool TextureConverter::IsExtensionSupported(
 }
 
 uint32_t TextureConverter::CookAsset(
-	const std::experimental::filesystem::path& asset,
-	const std::experimental::filesystem::path& outputDirectory) const
+	const std::experimental::filesystem::path& a_asset,
+	const std::experimental::filesystem::path& a_outputDirectory,
+	const AssetSettings a_assetSettings)
 {
-	std::string path = asset.string();
-	std::string out = outputDirectory.parent_path().string();
+	std::string path = a_asset.string();
+	std::string out = a_outputDirectory.parent_path().string();
 	std::string format = "BC3_UNORM";
 
 	char* arguments[]

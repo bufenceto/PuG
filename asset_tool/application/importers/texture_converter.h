@@ -16,7 +16,8 @@ namespace assets{
 			const std::experimental::filesystem::path& extension) const override;
 		uint32_t CookAsset(
 			const std::experimental::filesystem::path& asset,
-			const std::experimental::filesystem::path& outputDirectory) const override;
+			const std::experimental::filesystem::path& outputDirectory,
+			const AssetSettings a_assetSettings) override;
 		const char* GetExtension() const override { return COOKED_TEXTURE_EXTENSION; }
 		const AssetType GetAssetType() const override { return AssetType_Texture; }
 

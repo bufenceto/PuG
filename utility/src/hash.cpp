@@ -148,6 +148,7 @@ static void Read(std::istream &is, std::string &s, int max)
 	char* sbuf = (char*)_malloca(sizeof(char) * max);//c
 	is.read(sbuf, max);
 	s.assign(sbuf, is.gcount());
+	_freea(sbuf);
 }
 
 void pug::utility::SHA1(const std::string &string, char* out_result, const size_t& resultSize)

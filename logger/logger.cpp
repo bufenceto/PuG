@@ -46,7 +46,7 @@ void pug::log::SetTextColor(uint16_t color)
 void pug::log::ResetTextColor()
 {
 	HANDLE hstdout = GetStdHandle(STD_OUTPUT_HANDLE);
-	SetConsoleTextAttribute(hstdout, g_csbi.wAttributes);
+	SetConsoleTextAttribute(hstdout, LOG_COLOR_WHITE);
 }
 
 void pug::log::WriteToLog(const std::string& text)
