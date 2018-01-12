@@ -105,21 +105,93 @@ void WriteAssetEntriesToFile()
 PUG_RESULT ReadAssetEntriesFromFile()
 {
 	//look for library folder in "executable folder/../library"
-	path libraryPath = g_assetOutputPath;
+	path libraryDir = g_assetOutputPath;
 
 	uint32_t numEntries = 0;
 	uint32_t entrySize = 0;
 	//import library from file
-	if (exists(libraryPath))
-	{
+	//guarantee the file exists
+	if (!exists(libraryDir))
+	{//directory does not exist
+		if (!create_directories(libraryDir))
+		{
+			Error("Failed to create library directory");
+			return PUG_RESULT_FAILED_TO_CREATE_FILE_OR_DIR;
+		}
+	}
+
+	path libraryFilePath = libraryDir / "pug_asset_library.pal";
+	if (!exists(libraryFilePath))
+	{//file does not exist
+		HANDLE h = CreateFile(
+			libraryFilePath.string().c_str(),
+			GENERIC_READ | GENERIC_WRITE,
+			FILE_SHARE_READ | FILE_SHARE_WRITE,
+			0,
+			CREATE_NEW,
+			FILE_ATTRIBUTE_NORMAL,
+			nullptr);
+		CloseHandle(h);
+	}
+
+	if (file_size(libraryFilePath) > 0)
+	{//there is data in the file
 		fstream libraryFileStream;
-		libraryFileStream.open(libraryPath / "pug_asset_library.pal", fstream::in | fstream::binary);
+		libraryFileStream.open(libraryFilePath.string().c_str(), fstream::in | fstream::binary);
 		if (!libraryFileStream.is_open())
 		{
 			Error("Failed to open library file!");
 			return PUG_RESULT_FAILED_TO_READ_FILE;
 		}
-		if (!libraryFileStream.read((char*)&numEntries, sizeof(uint32_t)))
+		libraryFileStream.read((char*)&numEntries, sizeof(uint32_t));
+		if (libraryFileStream.fail())
+		{
+			Error("Failed to read library file header for entry count!\n");
+			return PUG_RESULT_FAILED_TO_READ_FILE;
+		}
+		if (!libraryFileStream.read((char*)&entrySize, sizeof(uint32_t)))
+		{
+			Error("Failed to read library file header for entry size!\n");
+			return PUG_RESULT_FAILED_TO_READ_FILE;
+		}
+		//PUG_ASSERT(numEntries < MAX_ASSETS, "The number of entries in the mal file exceeds our maximum allowed asset count!");
+		for (uint32_t i = 0; i < numEntries; ++i)
+		{
+			std::pair<AssetEntry, AssetSettings> entry;
+			if (!libraryFileStream.read((char*)&entry, entrySize))//read 1 entry
+			{
+				Error("Failed to read asset entries from library file !\n");
+			}
+			g_assetEntries.push_back(entry);
+		}
+	}
+
+	/*
+	if (exists(libraryDir))
+	{
+		path libraryFilePath = libraryDir / "pug_asset_library.pal";
+		if (!exists(libraryFilePath))
+		{
+			HANDLE h = CreateFile(
+				libraryFilePath.string().c_str(), 
+				GENERIC_READ | GENERIC_WRITE,
+				FILE_SHARE_READ | FILE_SHARE_WRITE,
+				0,
+				CREATE_NEW,
+				FILE_ATTRIBUTE_NORMAL,
+				nullptr);
+			CloseHandle(h);
+		}
+
+		fstream libraryFileStream;
+		libraryFileStream.open(libraryFilePath.string().c_str(), fstream::in | fstream::binary);
+		if (!libraryFileStream.is_open())
+		{
+			Error("Failed to open library file!");
+			return PUG_RESULT_FAILED_TO_READ_FILE;
+		}
+		libraryFileStream.read((char*)&numEntries, sizeof(uint32_t));
+		if (libraryFileStream.fail())
 		{
 			Error("Failed to read library file header for entry count!\n");
 			return PUG_RESULT_FAILED_TO_READ_FILE;
@@ -142,11 +214,12 @@ PUG_RESULT ReadAssetEntriesFromFile()
 	}
 	else
 	{
-		Error("directory %s does not exist!", libraryPath.string().c_str());
+		Error("directory %s does not exist!", libraryDir.string().c_str());
 		return PUG_RESULT_FILE_DOES_NOT_EXIST;
 	}
+	*/
 
-	Info("Finished importing asset library from %s", libraryPath.string().c_str());
+	Info("Finished importing asset library from directory %s", libraryDir.string().c_str());
 	return PUG_RESULT_OK;
 }
 
@@ -192,7 +265,8 @@ void FormatAndUpdateAssetEntry(
 	}
 }
 
-void CookAsset(const path& a_absoluteRawAssetPath,
+void CookAsset(
+	const path& a_absoluteRawAssetPath,
 	const path& a_outputDirectoryPath,
 	const path& a_relativeAssetPath,
 	const AssetSettings& a_assetSettings,
@@ -264,6 +338,62 @@ void CookAsset(const path& a_absoluteRawAssetPath,
 	{
 		Log("No suitable convert found for file: %s", a_absoluteRawAssetPath.string());
 	}
+}
+
+void UncookAsset(
+	const path& a_assetPath,
+	const AssetEntry& a_assetEntry)
+{
+	AssetConverter* suitableConverter = nullptr;
+
+	for (uint32_t i = 0; i < sizeof(g_converters) / sizeof(g_converters[0]); ++i)
+	{
+		path extension = a_assetEntry.m_extension;
+		if (extension.string().length() > 8)
+		{
+			Error("Files that have an extension of more than 8 characters are not supported");
+		}
+		if (g_converters[i]->IsExtensionSupported(extension))
+		{
+			suitableConverter = g_converters[i];
+			break;
+		}
+	}
+
+	if (suitableConverter != nullptr)
+	{//we found a converter that accepts these kind of files
+		suitableConverter->UncookAsset(a_assetPath);
+	}
+
+
+}
+
+int32_t FindActiveJobIndex(const path& jobPath)
+{
+	int32_t activeJobIndex = -1;
+	for (int32_t i = 0; i < (int32_t)g_activeJobs.size(); ++i)
+	{
+		if (g_activeJobs[i].GetPath() == jobPath)
+		{
+			activeJobIndex = i;
+			break;
+		}
+	}
+	return activeJobIndex;
+}
+
+int32_t FindQueuedJobIndex(const path& jobPath)
+{
+	int32_t queuedJobIndex = -1;
+	for (int32_t i = 0; i < (int32_t)g_queuedCookJobs.size(); ++i)
+	{
+		if (g_queuedCookJobs[i].GetPath() == jobPath)
+		{
+			queuedJobIndex = i;
+			break;
+		}
+	}
+	return queuedJobIndex;
 }
 
 PUG_RESULT pug::assets::InitAssetCooker(
@@ -361,7 +491,7 @@ PUG_RESULT pug::assets::SubmitCookJob(
 	}
 	if (cookJobIndex != -1)
 	{//replace existing cook job
-		new (&g_queuedCookJobs[cookJobIndex]) CookJob(job);
+		g_queuedCookJobs[cookJobIndex] = job;
 	}
 	else
 	{//else push new job
@@ -392,6 +522,16 @@ PUG_RESULT pug::assets::RemoveCookJob(const std::experimental::filesystem::path&
 	return PUG_RESULT_OK;
 }
 
+bool pug::assets::IsJobActive(const std::experimental::filesystem::path& assetPath)
+{
+	return FindActiveJobIndex(assetPath) != -1;
+}
+
+bool pug::assets::IsJobQueued(const std::experimental::filesystem::path& assetPath)
+{
+	return FindQueuedJobIndex(assetPath) != -1;
+}
+
 AssetType pug::assets::DetermineAssetType(const path& assetPath)
 {
 	//PUG_ASSERT(assetPath.has_extension(), "no extensions detected!");
@@ -407,59 +547,36 @@ AssetType pug::assets::DetermineAssetType(const path& assetPath)
 
 void pug::assets::GetCopyOfActiveJobList(vector<path>& out_activeJobs)
 {
-	//EnterCriticalSection(&g_cookJobsGuard);
+	EnterCriticalSection(&g_cookJobsGuard);
 	for (uint32_t i = 0; i < g_activeJobs.size(); ++i)
 	{
 		out_activeJobs.push_back(g_activeJobs[i].GetPath());
 	}
-	//LeaveCriticalSection(&g_cookJobsGuard);
+	LeaveCriticalSection(&g_cookJobsGuard);
 }
 
-void pug::assets::GetCopyOfQueuedJobList(vector<path>& out_activeJobs)
+void pug::assets::GetCopyOfQueuedJobList(vector<path>& out_queuedJobs)
 {
-
+	EnterCriticalSection(&g_cookJobsGuard);
+	for (uint32_t i = 0; i < g_queuedCookJobs.size(); ++i)
+	{
+		out_queuedJobs.push_back(g_queuedCookJobs[i].GetPath());
+	}
+	LeaveCriticalSection(&g_cookJobsGuard);
 }
 
 const uint32_t pug::assets::GetCookedAssetPath(
-	const path& a_assetPath,
-	path& out_cookedAssetPath)
+	const path& a_relativeRawAssetPath,
+	path& out_absoluteCookedAssetPath)
 {
-	int32_t assetEntryIndex = FindAssetEntry(a_assetPath.string().c_str());
+	int32_t assetEntryIndex = FindAssetEntry(a_relativeRawAssetPath.string().c_str());
 	if (assetEntryIndex != -1)
 	{
 		const path cookedExtension = g_assetEntries[assetEntryIndex].first.m_extension;
-		out_cookedAssetPath = (g_assetOutputPath / a_assetPath).replace_extension(cookedExtension);
+		out_absoluteCookedAssetPath = (g_assetOutputPath / a_relativeRawAssetPath).replace_extension(cookedExtension);
 		return 1;
 	}
 	return 0;
-}
-
-int32_t FindActiveJobIndex(const path& jobPath)
-{
-	int32_t activeJobIndex = -1;
-	for (int32_t i = 0; i < (int32_t)g_activeJobs.size(); ++i)
-	{
-		if (g_activeJobs[i].GetPath() == jobPath)
-		{
-			activeJobIndex = i;
-			break;
-		}
-	}
-	return activeJobIndex;
-}
-
-int32_t FindQueuedJobIndex(const path& jobPath)
-{
-	int32_t queuedJobIndex = -1;
-	for (int32_t i = 0; i < (int32_t)g_queuedCookJobs.size(); ++i)
-	{
-		if (g_queuedCookJobs[i].GetPath() == jobPath)
-		{
-			queuedJobIndex = i;
-			break;
-		}
-	}
-	return queuedJobIndex;
 }
 
 uint32_t WINAPI CookThreadMain(void*)
@@ -488,7 +605,6 @@ uint32_t WINAPI CookThreadMain(void*)
 				//swap
 				std::swap(g_queuedCookJobs[i], g_queuedCookJobs.back());
 				//pop
-				//g_queuedCookJobs.back().~CookJob();
 				g_queuedCookJobs.pop_back();
 				//safely add job to active list
 				EnterCriticalSection(&g_activeJobsGuard);
@@ -504,7 +620,7 @@ uint32_t WINAPI CookThreadMain(void*)
 		} 
 		LeaveCriticalSection(&g_cookJobsGuard);
 
-		//we now have a local copy of a job that WAS not present in the active list
+		//we now have a local copy of a job that WAS not present in the active list, it is currently impossible to stop an active job
 		if (cookJob.GetSettings().m_type != AssetType_Unknown)
 		{
 			path absoluteRawAssetPath = g_assetBasePath / cookJob.GetPath();
@@ -514,22 +630,22 @@ uint32_t WINAPI CookThreadMain(void*)
 				cookJob.GetPath(),
 				cookJob.GetSettings(),
 				cookJob.IsForced());
-
-			//lock acces to active job list
-			EnterCriticalSection(&g_activeJobsGuard);
-			//remove the job from the active list
-			for (int32_t i = 0; i < (int32_t)g_activeJobs.size(); ++i)
-			{
-				if (cookJob.GetPath() == g_activeJobs[i].GetPath())
-				{
-					std::swap(g_activeJobs[i], g_activeJobs.back());
-					g_activeJobs.pop_back();
-				}
-			}
-			//unlock acces to active job list;
-			LeaveCriticalSection(&g_activeJobsGuard);
-			WriteAssetEntriesToFile();
 		}
+		//lock acces to active job list
+		EnterCriticalSection(&g_activeJobsGuard);
+		//remove the job from the active list
+		for (int32_t i = 0; i < (int32_t)g_activeJobs.size(); ++i)
+		{
+			if (cookJob.GetPath() == g_activeJobs[i].GetPath())
+			{
+				std::swap(g_activeJobs[i], g_activeJobs.back());
+				g_activeJobs.pop_back();
+			}
+		}
+		//unlock acces to active job list;
+		LeaveCriticalSection(&g_activeJobsGuard);
+		WriteAssetEntriesToFile();
+
 	}
 	while(g_threadsRunning);
 
@@ -561,7 +677,6 @@ uint32_t WINAPI CleanUpThreadMain(void*)
 				if (queuedJobIndex != -1)
 				{//there was a queued job waiting
 					std::swap(g_queuedCookJobs[queuedJobIndex], g_queuedCookJobs.back());
-					g_queuedCookJobs.back().~CookJob();
 					g_queuedCookJobs.pop_back();
 				}
 
@@ -584,26 +699,21 @@ uint32_t WINAPI CleanUpThreadMain(void*)
 				if (assetEntryIndex != -1)
 				{
 					AssetEntry assetEntry = g_assetEntries[assetEntryIndex].first;
-					//delete output file
-					path absoluteAssetOutputPath = g_assetOutputPath / assetPath.replace_extension(assetEntry.m_extension);
-					if (exists(absoluteAssetOutputPath))
-					{
-						if (DeleteFile(absoluteAssetOutputPath.string().c_str()) == 0)
-						{
-							Error("Failed to delete outputted asset file at: %s", absoluteAssetOutputPath.string().c_str());
-						}
-					}
-					//remove entry
+					path absoluteCookedAssetPath = path();
+					GetCookedAssetPath(assetPath, absoluteCookedAssetPath);
+					//remove entry before uncooking, this prevents any other threads trying to access this delete job again
 					std::swap(g_assetEntries[assetEntryIndex], g_assetEntries.back());
 					g_assetEntries.pop_back();
-					//remove delete job
-					std::swap(g_deletedAssets[i], g_deletedAssets.back());
-					g_deletedAssets.pop_back();
-
-					LeaveCriticalSection(&g_deleteGuard);
+					//uncook the asset
+					UncookAsset(absoluteCookedAssetPath, assetEntry);
 					//flush new asset entry list to file
 					WriteAssetEntriesToFile();
 				}
+				//remove delete job
+				std::swap(g_deletedAssets[i], g_deletedAssets.back());
+				g_deletedAssets.pop_back();
+
+				LeaveCriticalSection(&g_deleteGuard);
 			}
 
 		//unlock access to job list

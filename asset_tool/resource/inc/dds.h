@@ -30,7 +30,7 @@ namespace resource {
 					((uint32_t)(uint8_t)(ch2) << 16) | ((uint32_t)(uint8_t)(ch3) << 24 ))
 #endif
 
-	const uint32_t DDS_MAGIC = 0x20534444; // "DDS "
+#define DDS_MAGIC 0x20534444 // "DDS "
 
 	struct DDS_PIXELFORMAT
 	{

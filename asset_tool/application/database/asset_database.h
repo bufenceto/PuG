@@ -1,14 +1,21 @@
 #pragma once
 #include "result_codes.h"
-#include "sha1.h"
 #include "asset_types.h"
-#include "importers/asset_settings.h"
-#include "loaders/material.h"
 
 #include <experimental/filesystem>
 
+namespace vmath {
+	class Int2;
+}
+
 namespace pug {
 namespace assets {
+
+
+
+	class SHA1Hash;
+	class AssetSettings;
+	class Material;
 
 	PUG_RESULT CreateAssetDataBase(
 		const std::experimental::filesystem::path& a_dataBaseFilePath);
@@ -32,9 +39,13 @@ namespace assets {
 
 	void SetAssetSettingsForFile(
 		const pug::assets::SHA1Hash& a_assetHash,
-		const AssetSettings& a_assetSettings);
+		const pug::assets::AssetSettings& a_assetSettings);
 
-	Material* FindMaterialForCookedMeshFile(
+	pug::assets::Material* FindMaterialForCookedMeshFile(
 		const std::experimental::filesystem::path& a_relativeFilePath);
+
+	vmath::Int2* FindSizeForCookedTextureFile(
+		const std::experimental::filesystem::path& a_relativeFilePath);
+
 }
 }

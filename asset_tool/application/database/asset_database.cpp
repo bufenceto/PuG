@@ -1,12 +1,16 @@
 #include "asset_database.h"
+
+#include "sha1.h"
 #include "importers/asset_settings.h"
 #include "importers/asset_cooker.h"
-
 #include "loaders/mesh_reader.h"
+#include "loaders/texture_reader.h"
+#include "loaders/material.h"
 
 #include "macro.h"
 
 #include "logger/logger.h"
+#include "vmath/vmath.h"
 
 #include <vector>
 
@@ -16,11 +20,14 @@ using namespace pug::log;
 using namespace std;
 using namespace std::experimental::filesystem;
 
+using vmath::Int2;
+
 static path g_assetDataBaseFile;
 
 static vector<SHA1Hash> g_importedAssets;
 static vector<AssetSettings> g_importedAssetSettings;
 static vector<Material> g_importedMeshMaterials;
+static vector<Int2> g_importedTextureSizes;
 
 static int32_t FindAssetInImportedAssetList(const SHA1Hash& a_assetHash)
 {
@@ -77,6 +84,7 @@ static bool ImportAssetSettingsFromFile(const path& a_assetDataBaseFile)
 			g_importedAssets.push_back(hash);
 			g_importedAssetSettings.push_back(settings);
 			g_importedMeshMaterials.push_back(Material());
+			g_importedTextureSizes.push_back(Int2());
 		}
 	}
 
@@ -178,6 +186,7 @@ void pug::assets::ImportAsset(
 	g_importedAssets.push_back(a_assetHash);
 	g_importedAssetSettings.push_back(settings);
 	g_importedMeshMaterials.push_back(Material());//push empty material
+	g_importedTextureSizes.push_back(Int2());//push empty size
 	//flush new contents to file
 	SubmitCookJob(a_relativeFilePath, settings);
 	FlushAssetSettingsToFile(g_assetDataBaseFile);
@@ -246,7 +255,7 @@ Material* pug::assets::FindMaterialForCookedMeshFile(
 			path cookedAssetPath = path();
 			if (GetCookedAssetPath(a_relativeFilePath, cookedAssetPath))
 			{
-				if (ReadMaterialFromMesh(cookedAssetPath, g_importedMeshMaterials[assetIndex]) != 0)
+				if(ReadMaterialFromMesh(cookedAssetPath, g_importedMeshMaterials[assetIndex]) == PUG_RESULT_OK)
 				{
 					res = &g_importedMeshMaterials[assetIndex];
 				}
@@ -255,6 +264,34 @@ Material* pug::assets::FindMaterialForCookedMeshFile(
 		else
 		{
 			res = &g_importedMeshMaterials[assetIndex];
+		}
+	}
+	return res;
+}
+
+
+vmath::Int2* pug::assets::FindSizeForCookedTextureFile(
+	const std::experimental::filesystem::path& a_relativeFilePath)
+{
+	Int2* res = nullptr;
+	SHA1Hash assetHash = a_relativeFilePath.string().c_str();
+	int32_t assetIndex = FindAssetInImportedAssetList(assetHash);
+	if (assetIndex != -1)
+	{//this asset is in the imported asset list, it could still be cooking
+		if (g_importedTextureSizes[assetIndex] == Int2())
+		{
+			path cookedAssetPath;// = path();
+			if (GetCookedAssetPath(a_relativeFilePath, cookedAssetPath))
+			{
+				if (ReadSizeFromTexture(cookedAssetPath, g_importedTextureSizes[assetIndex]) == PUG_RESULT_OK)
+				{
+					res = &g_importedTextureSizes[assetIndex];
+				}
+			}
+		}
+		else
+		{
+			res = &g_importedTextureSizes[assetIndex];
 		}
 	}
 	return res;

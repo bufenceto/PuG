@@ -1,5 +1,7 @@
 #include "mesh_converter.h"
 #include "logger.h"
+#include "sha1.h"
+#include "app_utility.h"
 
 #include "database/asset_database.h"
 
@@ -13,18 +15,18 @@
 
 #include <experimental\filesystem>
 
+#include <Windows.h>
+
 using namespace pug;
 using namespace pug::assets;
 using namespace pug::log;
 using namespace Assimp;
-using namespace std::experimental::filesystem;
 
-void ImportAssetDependencies(const aiScene* a_scene)
+using std::experimental::filesystem::path;
+
+void ImportMeshDependencies(const aiScene* a_scene, const path& relativeParentPath)
 {
-	//for (uint32_t i = 0; i < a_scene->mNumMeshes; ++i)
-	//{
-	//	a_scene->mMeshes[i]->
-	//}
+	path g_assetBasePath = GetAssetBasePath();
 
 	for(uint32_t i = 0; i < a_scene->mNumMaterials; ++i)
 	{
@@ -38,8 +40,35 @@ void ImportAssetDependencies(const aiScene* a_scene)
 				aiString aiTexturePath;
 				mat->Get(_AI_MATKEY_TEXTURE_BASE, texType, j, aiTexturePath);
 				Info("Importing Asset Dependency from %s", aiTexturePath.C_Str());
-				ImportAsset(SHA1Hash(aiTexturePath.C_Str()), aiTexturePath.C_Str(), AssetType_Texture);
-				//pugMaterial.AddTexture(TextureReference(aiTexturePath.C_Str()), ConvertaiTextureType((aiTextureType)texType));
+				
+				path relativeDependentAssetPath;
+				MakePathRelativeToAssetBasePath(relativeParentPath / path(aiTexturePath.C_Str()), g_assetBasePath, relativeDependentAssetPath);
+				ImportAsset(SHA1Hash(relativeDependentAssetPath.string().c_str()), relativeDependentAssetPath, AssetType_Texture);
+			}
+		}
+	}
+}
+
+void DeimportMeshDependencies(const aiScene* a_scene, const path& relativeParentPath)
+{
+	path g_assetOutputPath = GetAssetOutputPath();
+
+	for (uint32_t i = 0; i < a_scene->mNumMaterials; ++i)
+	{
+		aiMaterial* mat = a_scene->mMaterials[i];
+		for (uint32_t texType = (uint32_t)(aiTextureType_DIFFUSE); texType < (uint32_t)(aiTextureType_UNKNOWN); ++texType)
+		{
+			//get number of textures for this type
+			uint32_t texCount = mat->GetTextureCount((aiTextureType)texType);
+			for (uint32_t j = 0; j < texCount; ++j)
+			{
+				aiString aiTexturePath;
+				mat->Get(_AI_MATKEY_TEXTURE_BASE, texType, j, aiTexturePath);
+				Info("Removing Asset Dependency from %s", aiTexturePath.C_Str());
+
+				path relativeDependentAssetPath;
+				MakePathRelativeToAssetBasePath(relativeParentPath / path(aiTexturePath.C_Str()), g_assetOutputPath, relativeDependentAssetPath);
+				RemoveAsset(SHA1Hash(relativeDependentAssetPath.string().c_str()), relativeDependentAssetPath);
 			}
 		}
 	}
@@ -69,7 +98,7 @@ bool MeshConverter::IsExtensionSupported(const path& extension) const
 	return isSupported;
 }
 
-uint32_t MeshConverter::CookAsset(
+PUG_RESULT MeshConverter::CookAsset(
 	const path& absoluteRawAssetInputPath, 
 	const path& absoluteCookedAssetOutputPath,
 	const AssetSettings a_assetSettings)
@@ -100,7 +129,7 @@ uint32_t MeshConverter::CookAsset(
 		return PUG_RESULT_INVALID_ARGUMENTS;
 	}
 
-	uint32_t extensionMask = !(absoluteRawAssetInputPath.extension() == ".assbin");
+	uint32_t extensionMask = !(absoluteRawAssetInputPath.extension() == ".assbin");//if this is an assbin file we mask away our post process flags
 	const aiScene* scene = importer->ReadFile(absoluteRawAssetInputPath.string(), postProcessingFlags * extensionMask);
 	if (scene)
 	{
@@ -110,7 +139,9 @@ uint32_t MeshConverter::CookAsset(
 			Log("Failed to export mesh to path: %s", absoluteCookedAssetOutputPath.string());
 			res = PUG_RESULT_FAILED_TO_WRITE_FILE;
 		}
-		ImportAssetDependencies(scene);
+
+		path parentBase = absoluteRawAssetInputPath.parent_path();
+		ImportMeshDependencies(scene, parentBase);
 
 		delete exporter;
 	}
@@ -123,6 +154,39 @@ uint32_t MeshConverter::CookAsset(
 	delete importer;
 
 	return res;
+}
+
+PUG_RESULT MeshConverter::UncookAsset(
+	const path& absoluteCookedAssetPath)
+{
+	if (absoluteCookedAssetPath.extension() != ".assbin")
+	{
+		Error("Tried to uncook a raw mesh file");
+		return PUG_RESULT_INVALID_ARGUMENTS;
+	}
+
+	Assimp::Importer* importer = new Assimp::Importer();
+
+	//we must be only reading from an assbin file
+	const aiScene* scene = importer->ReadFile(absoluteCookedAssetPath.string(), 0);
+	if (scene)
+	{
+		path parentBase = absoluteCookedAssetPath.parent_path();
+		DeimportMeshDependencies(scene, parentBase);
+	}
+
+	//delete output file
+	//path absoluteAssetOutputPath = g_assetOutputPath / path(a_assetPath).replace_extension(a_assetEntry.m_extension);
+	if (exists(absoluteCookedAssetPath))
+	{
+		if (DeleteFile(absoluteCookedAssetPath.string().c_str()) == 0)
+		{
+			Error("Failed to delete outputted asset file at: %s", absoluteCookedAssetPath.string().c_str());
+			return PUG_RESULT_FAILED_TO_READ_FILE;
+		}
+	}
+
+	return PUG_RESULT_OK;
 }
 
 /*

@@ -1,5 +1,7 @@
 #include "mesh_reader.h"
 
+#include "importers/mesh_converter.h"
+
 #include "assimp/Importer.hpp"
 #include "assimp/scene.h"
 
@@ -28,15 +30,29 @@ TEXTURE_TYPE ConvertaiTextureType(const aiTextureType texType)
 	case aiTextureType_LIGHTMAP: return TEXTURE_TYPE_LIGHTMAP;
 	case aiTextureType_REFLECTION: return TEXTURE_TYPE_REFLECTION;
 	case aiTextureType_UNKNOWN: return TEXTURE_TYPE_UNKNOWN;
+	default:
+		return TEXTURE_TYPE_UNKNOWN;
 	}
 }
 
-const uint32_t pug::assets::ReadMaterialFromMesh(
+PUG_RESULT pug::assets::ReadMaterialFromMesh(
 	const std::experimental::filesystem::path& a_absoluteCookedAssetPath,
 	pug::assets::Material& out_material)
 {
-	uint32_t res = 0;
+	//does this file exist and is it a file
+	if (!exists(a_absoluteCookedAssetPath) || is_directory(a_absoluteCookedAssetPath))
+	{
+		log::Error("File does not exist!");
+		return PUG_RESULT_INVALID_ARGUMENTS;
+	}
+	//is this a valid file
+	if (a_absoluteCookedAssetPath.extension() != COOKED_MESH_EXTENSION)
+	{
+		log::Error("File extension was invalid");
+		return PUG_RESULT_INVALID_ARGUMENTS;
+	}
 
+	PUG_RESULT res = PUG_RESULT_UNKNOWN;
 	//no import flags, we should be reading from a processed asset only!
 	const aiScene* scene = importer->ReadFile(a_absoluteCookedAssetPath.string().c_str(), 0);
 	if (scene != nullptr)
@@ -90,10 +106,84 @@ const uint32_t pug::assets::ReadMaterialFromMesh(
 				}
 			}
 			out_material = pugMaterial;
-			res = 1;
+			res = PUG_RESULT_OK;
 		}
+	}
+	else
+	{
+		res = PUG_RESULT_FAILED_TO_READ_FILE;
 	}
 
 	importer->FreeScene();
 	return res;
 }
+
+/* FUNCTION WAS SCRAPPED
+PUG_RESULT pug::assets::ReadDependenciesFromMesh(
+	const path& a_absoluteCookedAssetPath,
+	std::vector<Material>& out_materials)
+{
+	PUG_RESULT res = PUG_RESULT_UNKNOWN;
+	//no import flags, we should be reading from a processed asset only!
+	const aiScene* scene = importer->ReadFile(a_absoluteCookedAssetPath.string().c_str(), 0);
+	if (scene != nullptr)
+	{
+		for (uint32_t i = 0; i < scene->mNumMaterials; ++i)
+		{
+			Material pugMaterial = {};
+			aiMaterial* assimpMaterial = scene->mMaterials[i];
+
+			aiColor3D aiDiffuse = aiColor3D(0);
+			aiColor3D aiAmbient = aiColor3D(0);
+			aiColor3D aiEmissive = aiColor3D(0);
+			aiColor3D aiSpecular = aiColor3D(0);
+			float aiShininess = 0.0f;
+			float aiOpacity = 0.0f;
+			float aiShininessStrength = 0.0f;
+
+			aiString aiDiffuseTexturePath = aiString();
+			aiString aiNormalTexturePath = aiString();
+			aiString aiSpecularTexturePath = aiString();
+			aiString aiEmissiveTexturePath = aiString();
+
+			assimpMaterial->Get(AI_MATKEY_COLOR_DIFFUSE, aiDiffuse);
+			assimpMaterial->Get(AI_MATKEY_COLOR_AMBIENT, aiAmbient);
+			assimpMaterial->Get(AI_MATKEY_COLOR_SPECULAR, aiSpecular);
+			assimpMaterial->Get(AI_MATKEY_COLOR_EMISSIVE, aiEmissive);
+			assimpMaterial->Get(AI_MATKEY_SHININESS, aiShininess);
+			assimpMaterial->Get(AI_MATKEY_OPACITY, aiOpacity);
+			assimpMaterial->Get(AI_MATKEY_SHININESS_STRENGTH, aiShininessStrength);
+
+			pugMaterial.SetDiffuseColor(Vector3(aiDiffuse.r, aiDiffuse.g, aiDiffuse.b));
+			pugMaterial.SetAmbientColor(Vector3(aiAmbient.r, aiAmbient.g, aiAmbient.b));
+			pugMaterial.SetSpecularColor(Vector3(aiSpecular.r, aiSpecular.g, aiSpecular.b));
+			pugMaterial.SetEmissiveColor(Vector3(aiEmissive.r, aiEmissive.g, aiEmissive.b));
+			pugMaterial.SetShininess(aiShininess);
+			pugMaterial.SetOpacity(aiOpacity);
+			pugMaterial.SetShininessStrength(aiShininessStrength);
+
+			//for all texture types
+			for (uint32_t texType = (uint32_t)(aiTextureType_DIFFUSE); texType < (uint32_t)(aiTextureType_UNKNOWN); ++texType)
+			{
+				//get number of textures for this type
+				uint32_t texCount = assimpMaterial->GetTextureCount((aiTextureType)texType);
+				for (uint32_t i = 0; i < texCount; ++i)
+				{
+					aiString aiTexturePath;
+					assimpMaterial->Get(_AI_MATKEY_TEXTURE_BASE, texType, i, aiTexturePath);
+					pugMaterial.AddTexture(TextureReference(aiTexturePath.C_Str()), ConvertaiTextureType((aiTextureType)texType));
+				}
+			}
+			out_materials.push_back(pugMaterial);
+			res = PUG_RESULT_OK;
+		}
+	}
+	else
+	{
+		res = PUG_RESULT_FAILED_TO_READ_FILE;
+	}
+
+	importer->FreeScene();
+	return res;
+}
+*/

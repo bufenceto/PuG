@@ -27,6 +27,8 @@ namespace assets {
 
 	void BuildActiveJobWindow(
 		const std::vector<std::experimental::filesystem::path>& a_activeJobPaths);
+	void BuildQueuedJobWindow(
+		const std::vector<std::experimental::filesystem::path>& a_queuedJobPaths);
 
 	const std::string GetCurrentSelectedItemString();
 

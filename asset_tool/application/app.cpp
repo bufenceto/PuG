@@ -26,6 +26,9 @@
 
 #include <Windows.h>
 
+#define RELATIVE_ASSET_DIR "../assets/"
+#define RELATIVE_LIBRARY_DIR "../library/"
+#define ASSET_DATABASE_FILENAME "asset_tool_data.adb"
 #define MAX_PATH_SIZE 260
 
 class Application : public pug::iApp
@@ -119,16 +122,15 @@ ImVec2 operator* (const ImVec2& a, const float b)
 	return ImVec2(a.x * b, a.y * b);
 }
 
-//path MakePathRelativeToAssetBasePath(path assetPath)
-//{
-//	if (!assetPath.is_absolute())
-//	{
-//		assetPath = canonical(assetPath);
-//	}
-//
-//	string absoluteAssetPath = assetPath.string();
-//	return string(absoluteAssetPath.begin() + g_assetBasePath.string().length() + 1, absoluteAssetPath.end());
-//}
+path GetAssetBasePath()
+{
+	return g_assetBasePath;
+}
+
+path GetAssetOutputPath()
+{
+	return g_assetOutputPath;
+}
 
 void DirectoryChangeCallBack(DirectoryChange dirChange)
 {
@@ -191,8 +193,11 @@ void BuildGUI()
 
 	std::vector<path> activeJobPaths;
 	GetCopyOfActiveJobList(activeJobPaths);
-
 	BuildActiveJobWindow(activeJobPaths);
+
+	std::vector<path> queuedJobPaths;
+	GetCopyOfQueuedJobList(queuedJobPaths);
+	BuildQueuedJobWindow(queuedJobPaths);
 
 }
 
@@ -214,13 +219,13 @@ Application::~Application()
 
 bool Application::Initialize()
 {
-	g_assetBasePath = canonical("../assets/");
-	g_assetOutputPath = canonical(g_assetBasePath / "../library/");
+	g_assetBasePath = canonical(RELATIVE_ASSET_DIR);
+	g_assetOutputPath = canonical(g_assetBasePath / RELATIVE_LIBRARY_DIR);
 
 	char executablePath[MAX_PATH_SIZE];
 	GetModuleFileName(GetModuleHandleA(NULL), executablePath, MAX_PATH_SIZE);
 	path exePath = executablePath;
-	g_assetSettingsFilePath = exePath.parent_path() / "asset_tool_data.adb";
+	g_assetSettingsFilePath = exePath.parent_path() / ASSET_DATABASE_FILENAME;
 	if (!exists(g_assetBasePath))
 	{
 		if (!create_directories(g_assetBasePath))

@@ -1,6 +1,8 @@
 #include "gui_builder.h"
 
+#include "importers/asset_cooker.h"
 #include "database/asset_database.h"
+#include "loaders/material.h"
 
 #include "logger.h"
 #include "macro.h"
@@ -63,7 +65,6 @@ static const char* GetCompressionMethodString(TEXTURE_COMPRESSION_METHODS method
 {
 	switch (method)
 	{
-	case TEXTURE_COMPRESSION_METHODS_UNCOMPRESSED: return "UNCOMPRESSED";
 	case TEXTURE_COMPRESSION_METHODS_BC1: return "BC1_UNORM";
 	case TEXTURE_COMPRESSION_METHODS_BC2: return "BC2_UNORM";
 	case TEXTURE_COMPRESSION_METHODS_BC3: return "BC3_UNORM";
@@ -246,10 +247,9 @@ static ITEM_DETAILS_GUI_RESULT ImGuiBuildMeshDetails(
 					ImGui::Text(stream.str().c_str());
 				}
 			}
-
 		}
 	}
-	if (ImGui::Button("Remove this mesh asset"))
+	if (!IsJobActive(a_relativeAssetPath) && !IsJobQueued(a_relativeAssetPath) && ImGui::Button("Remove this mesh asset"))
 	{
 		//RemoveAsset(a_assetHash, a_relativeAssetPath);
 		res = ITEM_DETAILS_GUI_RESULT_REMOVE_ITEM;
@@ -271,49 +271,46 @@ static ITEM_DETAILS_GUI_RESULT ImGuiBuildTextureDetails(
 	TextureSettings& settings = a_importedItemSettings.m_texSettings;
 
 	//TEXTURE_COMPRESSION_METHODS m_compressionMethod;
-	TEXTURE_COMPRESSION_METHODS selectedCompressionMethod = settings.m_compressionMethod == 0 ? (TEXTURE_COMPRESSION_METHODS)1 : settings.m_compressionMethod;
+	TEXTURE_COMPRESSION_METHODS selectedCompressionMethod = settings.m_compressionMethod;// == 0 ? (TEXTURE_COMPRESSION_METHODS)1 : settings.m_compressionMethod;
 	const char* compresString = GetCompressionMethodString(selectedCompressionMethod);
 	if (ImGui::TreeNode(compresString))
 	{
-		if (ImGui::RadioButton("BC1 (Color Maps)", compresString == "TEXTURE_COMPRESSION_METHODS_BC1"))
+		if (ImGui::RadioButton("BC1 (Color Maps)", compresString == "BC1_UNORM"))
 		{
 			settings.m_compressionMethod = TEXTURE_COMPRESSION_METHODS_BC1;
 			res = ITEM_DETAILS_GUI_RESULT_OPTION_CLICKED;
 		}
-		if (ImGui::RadioButton("BC2 (N/A)", compresString == "TEXTURE_COMPRESSION_METHODS_BC2"))
-		{
-			settings.m_compressionMethod = TEXTURE_COMPRESSION_METHODS_BC2;
-			res = ITEM_DETAILS_GUI_RESULT_OPTION_CLICKED;
-		}
-		if (ImGui::RadioButton("BC3 (Color maps with alpha)", compresString == "TEXTURE_COMPRESSION_METHODS_BC3"))
+		//if (ImGui::RadioButton("BC2 (N/A)", false /* compresString == "BC2_UNORM" */))
+		//{
+			//settings.m_compressionMethod = TEXTURE_COMPRESSION_METHODS_BC2;
+			//res = ITEM_DETAILS_GUI_RESULT_OPTION_CLICKED;
+		//}
+		if (ImGui::RadioButton("BC3 (Color maps with alpha)", compresString == "BC3_UNORM"))
 		{
 			settings.m_compressionMethod = TEXTURE_COMPRESSION_METHODS_BC3;
 			res = ITEM_DETAILS_GUI_RESULT_OPTION_CLICKED;
 		}
-		if (ImGui::RadioButton("BC4 (Grayscale)", compresString == "TEXTURE_COMPRESSION_METHODS_BC4"))
+		if (ImGui::RadioButton("BC4 (Grayscale)", compresString == "BC4_UNORM"))
 		{
 			settings.m_compressionMethod = TEXTURE_COMPRESSION_METHODS_BC4;
 			res = ITEM_DETAILS_GUI_RESULT_OPTION_CLICKED;
 		}
-		if (ImGui::RadioButton("BC5 (Tangent-space normal maps)", compresString == "TEXTURE_COMPRESSION_METHODS_BC5"))
+		if (ImGui::RadioButton("BC5 (Tangent-space normal maps)", compresString == "BC5_UNORM"))
 		{
 			settings.m_compressionMethod = TEXTURE_COMPRESSION_METHODS_BC5;
 			res = ITEM_DETAILS_GUI_RESULT_OPTION_CLICKED;
 		}
-		if (ImGui::RadioButton("BC6 (HDR)", compresString == "TEXTURE_COMPRESSION_METHODS_BC6"))
+		if (ImGui::RadioButton("BC6 (HDR)", compresString == "BC6_UNORM"))
 		{
 			settings.m_compressionMethod = TEXTURE_COMPRESSION_METHODS_BC6;
 			res = ITEM_DETAILS_GUI_RESULT_OPTION_CLICKED;
 		}
-		if (ImGui::RadioButton("BC7 (HQ Color/Color with full alpha)", compresString == "TEXTURE_COMPRESSION_METHODS_BC7"))
+		if (ImGui::RadioButton("BC7 (HQ Color/Color with full alpha)", compresString == "BC7_UNORM"))
 		{
 			settings.m_compressionMethod = TEXTURE_COMPRESSION_METHODS_BC7;
 			res = ITEM_DETAILS_GUI_RESULT_OPTION_CLICKED;
 		}
-		if (ImGui::SliderInt("Mips: ", (int32_t*)&settings.m_numMipsToGenerate, 0, 16))
-		{
-			res = ITEM_DETAILS_GUI_RESULT_OPTION_CLICKED;
-		}
+
 		ImGui::TreePop();
 	}
 	//uint8_t m_compress;
@@ -331,12 +328,33 @@ static ITEM_DETAILS_GUI_RESULT ImGuiBuildTextureDetails(
 	{
 		res = ITEM_DETAILS_GUI_RESULT_OPTION_CLICKED;
 	}
-	//uint32_t m_numMipsToGenerate;
-	if (ImGui::Button("Remove this texture asset"))
+	uint32_t maxMips = 0;
+	Int2* textureSize = FindSizeForCookedTextureFile(a_relativeAssetPath);
+	if (textureSize != nullptr)
 	{
+		maxMips = (uint32_t)log2(VMATH_MAX(textureSize->x, textureSize->y)) + 1;
+	}
+	if (ImGui::SliderInt("Mips: ", (int32_t*)&settings.m_numMipsToGenerate, 0, maxMips))
+	{
+		res = ITEM_DETAILS_GUI_RESULT_OPTION_CLICKED;
+	}
+	//uint32_t m_numMipsToGenerate;
+	if (!IsJobActive(a_relativeAssetPath) && !IsJobQueued(a_relativeAssetPath) && ImGui::Button("Remove this texture asset"))
+	{
+		//RemoveAsset(a_assetHash, a_relativeAssetPath);
 		res = ITEM_DETAILS_GUI_RESULT_REMOVE_ITEM;
 	}
 
+	return res;
+}
+
+static ITEM_DETAILS_GUI_RESULT ImGuiBuildUnknownAssetDetails()
+{
+	ITEM_DETAILS_GUI_RESULT res = ITEM_DETAILS_GUI_RESULT_NOTHING;
+	if (ImGui::Button("Remove this asset"))
+	{
+		res = ITEM_DETAILS_GUI_RESULT_REMOVE_ITEM;
+	}
 	return res;
 }
 
@@ -367,22 +385,25 @@ uint32_t pug::assets::BuildDirectoryStructureWindow(
 			}
 			else
 			{
-				path relativePath = MakePathRelativeToAssetBasePath(currDir.path().string(), a_assetBasePath);
-				bool selected = (relativePath.string() == g_currentSelected);
+				path relativePath;
+				string relativePathString;
+				MakePathRelativeToAssetBasePath(currDir.path().string(), a_assetBasePath, relativePath);
+				relativePathString = relativePath.string();
+				
+				bool selected = (relativePathString == g_currentSelected);
 
-				path relPath = MakePathRelativeToAssetBasePath(currDir.path(), a_assetBasePath).string();// .string();
+				path relPath;
+				MakePathRelativeToAssetBasePath(currDir.path(), a_assetBasePath, relPath);// .string();
 
 				string stringToShow = relPath.filename().string();
 				if (IsItemInDatabase(relPath.string().c_str()))
 				{
-					//currDirToShow += " [imported]";
 					stringToShow += " (+)";
 				}
 				if (ImGui::Selectable(stringToShow.c_str(), &selected))
 				{
-					g_currentSelected = relativePath.string();
+					g_currentSelected = relativePathString;
 					res = 1;
-					//NewAssetSelected(currDir.path().string());
 				}
 			}
 
@@ -433,7 +454,7 @@ ITEM_DETAILS_GUI_RESULT pug::assets::BuildAssetDetailWindow(
 				break;
 			}
 			default:
-				Warning("Asset type not recognized!"); break;
+				res = ImGuiBuildUnknownAssetDetails();
 			}
 			SetAssetSettingsForFile(hash, assetSettings);
 		}
@@ -460,6 +481,17 @@ void pug::assets::BuildActiveJobWindow(
 	for (uint32_t i = 0; i < (uint32_t)a_activeJobPaths.size(); ++i)
 	{
 		ImGui::Text(a_activeJobPaths[i].string().c_str());
+	}
+	ImGui::End();
+}
+
+void pug::assets::BuildQueuedJobWindow(
+	const std::vector<path>& a_queuedJobPaths)
+{
+	ImGui::Begin("Queued Jobs");
+	for (uint32_t i = 0; i < (uint32_t)a_queuedJobPaths.size(); ++i)
+	{
+		ImGui::Text(a_queuedJobPaths[i].string().c_str());
 	}
 	ImGui::End();
 }

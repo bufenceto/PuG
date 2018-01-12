@@ -359,8 +359,7 @@ PUG_RESULT pug::assets::resource::LoadDDSTexture(
 	}
 
 	// Check for DX10 extension
-	//THIS SHOULD NEVER HAPPEN IN VORPAL!
-
+	//THIS SHOULD NEVER HAPPEN IN PUG!
 	if ((hdr->ddspf.flags & DDS_FOURCC) && (VPL_MAKEFOURCC('D', 'X', '1', '0') == hdr->ddspf.fourCC))
 	{
 		Error("Invalid DDS file type!");

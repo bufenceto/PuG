@@ -10,6 +10,6 @@ enum AssetType
 	AssetType_Shader = 4,
 	AssetType_NumAssetTypes,
 
-	AssetType_ForceSize = 0xffffffff
+	AssetType_ForceSize = 0x7fffffff
 };
 static_assert(sizeof(AssetType) == 4, "Enum size is not 4!");
